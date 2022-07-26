@@ -1,4 +1,11 @@
-# IETF-SAT
+# IETF-SAT 
+
+## IETF links
+
+- The [proposed SATP charter](charter.md)
+
+## Background
+
 IETF Secure Asset Transfer (SAT) group
 
 The goal of Secure Asset Transfer (SAT) is to develop a standard protocol which operates between two gateways for the purpose of transferring digital assets between networks or systems. Each gateway represents one network or system, and the SAT protocol performs a unidirectional transfer of a digital asset from the origin network to a destination network.
