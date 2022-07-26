@@ -1,10 +1,6 @@
+# Secure Asset Transfer (SAT) Protocol
 
 This is the draft charter for SAT:
-
-[Draft Charter]
-
-
-Secure Asset Transfer (SAT) Protocol
 
 # Objective
 
