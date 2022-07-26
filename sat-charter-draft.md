@@ -12,7 +12,7 @@ The goal of the Secure Asset Transfer Protocol (SATP) working group will be to d
 
 Each gateway represents one network or system, and the SAT protocol performs a unidirectional transfer of a digital asset from the origin network to a destination network, with third-party verifiability.
 
-A key goal for the SAT protocol is to ensure that the properties of atomicity, consistency, isolation and durability (ACID) are satisfied in an asset transfer, and that rollbacks are supported in the case of a failure in satisfying all these properties.
+A key goal for the SATP protocol is to ensure that the properties of atomicity, consistency, isolation and durability (ACID) are satisfied in an asset transfer, and that rollbacks are supported in the case of a failure in satisfying all these properties.
 
 The requirement of consistency implies that asset transfer protocol always leaves both networks in a consistent state (that at any moment the asset must be valid in one network only). Atomicity means that the protocol must guarantee that either the transfer commits entirely (completes) or entirely fails, where failure is taken to mean there is no change to the state of the asset in the origin network.
 
