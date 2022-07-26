@@ -1,6 +1,6 @@
-# Secure Asset Transfer (SAT) Protocol
+# Secure Asset Transfer Protocol (SATP)
 
-This is the draft charter for SAT:
+This is the draft charter for SATP:
 
 # Objective
 
@@ -20,22 +20,22 @@ The property of isolation means that while a transfer is occurring to a digital 
 
 # Scope
 
-SAT will use existing IETF standards for various aspects of the protocol, including secure channel establishment (TLS), payload formats (e.g. JSON, JOSE, JWT, CBOR, COSE), digital signatures and encryption (JOSE, JWE), digital certificates (PKIX) and others.
+SATP will use existing IETF standards for various aspects of the protocol, including secure channel establishment (TLS), payload formats (e.g. JSON, JOSE, JWT, CBOR, COSE), digital signatures and encryption (JOSE, JWE), digital certificates (PKIX) and others.
 
 Although the immediate focus is on a unidirectional asset transfer protocol, the resulting building blocks should be usable to support future designs of bidirectional transfers.
 
 Specifically, the SATP working group will work on:
 
-- SAT terminology (extending NISTIR-8202 or ISO-22739)
+- SATP terminology (extending NISTIR-8202 or ISO-22739)
 - API-endpoints (e.g. RESTful APIs)
 - Resource identifiers
 - Message flows and payloads
 
 # Milestones
 
-- SAT Use-Cases document – 6 months
-- SAT Architecture document – 12 months
-- SAT Protocol document – 12 months
+- SATP Use-Cases document – 6 months
+- SATP Architecture document – 12 months
+- SATP Protocol document – 12 months
 
 
 
