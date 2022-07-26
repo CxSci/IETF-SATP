@@ -1,14 +1,14 @@
+# Secure Asset Transfer (SAT) Protocol
 
 This is the draft charter for SAT:
 
-[Draft Charter]
-
-
-Secure Asset Transfer (SAT) Protocol
+# Objective
 
 There is currently a growing interest in several industry sectors of using the Internet as the foundation for the exchange of digital assets.
 
-The goal of Secure Asset Transfer (SAT) is to develop a standard protocol which operates between two peer gateways for the purpose of transferring digital assets between networks or systems.  
+The goal of the Secure Asset Transfer Protocol (SATP) working group will be to develop a standard protocol which operates between two peer gateways for the purpose of transferring digital assets between networks or systems.  
+
+# Problem space and architecture
 
 Each gateway represents one network or system, and the SAT protocol performs a unidirectional transfer of a digital asset from the origin network to a destination network, with third-party verifiability.
 
@@ -18,22 +18,24 @@ The requirement of consistency implies that asset transfer protocol always leave
 
 The property of isolation means that while a transfer is occurring to a digital asset from an origin network, no other state changes can occur to the asset. The property of durability means that once the transfer has been committed by both gateways on behalf of the respective networks, the commitment must hold regardless of subsequent unavailability (e.g. crash) of the gateways implementing the transfer protocol.
 
+# Scope
+
 SAT will use existing IETF standards for various aspects of the protocol, including secure channel establishment (TLS), payload formats (e.g. JSON, JOSE, JWT, CBOR, COSE), digital signatures and encryption (JOSE, JWE), digital certificates (PKIX) and others.
 
-The immediate focus is on a unidirectional asset transfer protocol, although the resulting building blocks can be used to support designs for bidirectional transfers.
+Although the immediate focus is on a unidirectional asset transfer protocol, the resulting building blocks should be usable to support future designs of bidirectional transfers.
 
-Scope of work for SAT Protocol:
+Specifically, the SATP working group will work on:
 
-•	API-endpoint definitions (e.g. RESTful APIs)
-•	Resource identifiers
-•	Message flows and payloads
-•	Some terminology (extending NISTIR-8202 or ISO-22739)
+- SAT terminology (extending NISTIR-8202 or ISO-22739)
+- API-endpoints (e.g. RESTful APIs)
+- Resource identifiers
+- Message flows and payloads
 
-Milestones
+# Milestones
 
-•	SAT Use-Cases document – 6 months
-•	SAT Architecture document – 12 months
-•	SAT Protocol document – 12 months
+- SAT Use-Cases document – 6 months
+- SAT Architecture document – 12 months
+- SAT Protocol document – 12 months
 
 
 
