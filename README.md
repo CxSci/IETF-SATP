@@ -2,7 +2,7 @@
 
 ## IETF links
 
-- The [proposed SATP charter](charter.md)
+- The [proposed SATP charter](https://github.com/CxSci/IETF-SAT/blob/main/sat-charter-draft.md)
 
 ## Background
 
