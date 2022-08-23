@@ -30,7 +30,7 @@ The property of isolation means that while a transfer is occurring from an origi
 
 # Scope
 
-The immediate scope of work for SATP will be a base architecture that utilizes the gateway paradigm in such a way that is permits a common semantic understanding to be shared among the broad cases of asset transfers, data sharing and coordinated local asset exchanges.
+The immediate scope of work for SATP will be a base architecture that utilizes the gateway paradigm in such a way that it permits a common semantic understanding to be shared among the broad cases of asset transfers, data sharing and coordinated local asset exchanges.
 
 SATP will use existing IETF standards for various aspects of the protocol, including secure channel establishment (TLS), payload formats (e.g. JSON, JOSE, JWT, CBOR, COSE, etc.), digital signatures and encryption (JOSE, JWE), digital certificates (PKIX) and others.
 
