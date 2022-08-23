@@ -14,9 +14,7 @@ The goal of the Secure Asset Transfer Protocol (SATP) working group will be to d
 
 To begin addressing these challenges, SATP will employ the gateway paradigm as a means for digital assets to be moved from one network to another through a standardized asset transfer protocol implemented between peer gateways. The same gateway paradigm will be used for data sharing between two networks, when one or both are private networks. Additionally, the gateway paradigm will be used to address the case of coordinated asset exchanges on two separate networks.
 
-Each gateway represents one network or system, and the SAT protocol performs a voluntary transfer of a digital asset from the origin network to a destination network, in such a way that evidence of the transfer can be obtained from both networks by a trusted third-party audit entity in the case of disputes. 
-
-Both the origin and destination network are assumed to share a common understanding of the digital asset.
+Each gateway represents one network or system, and the SAT protocol performs a voluntary transfer of a digital asset from the origin network to a destination network, in such a way that evidence of the transfer can be obtained from both networks by a trusted third-party audit entity in the case of disputes. Both the origin and destination network are assumed to share a common understanding of the digital asset.
 
 There might be several gateways representing the same network or system. When we refer to an asset transfer among two networks, we assume that the same peer gateways representing the networks are participating in the entire asset transfer sequence from the beginning to the end.
 
