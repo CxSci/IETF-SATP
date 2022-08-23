@@ -12,39 +12,47 @@ The goal of the Secure Asset Transfer Protocol (SATP) working group will be to d
 
 # Problem space and architecture
 
-To begin addressing these challenges, SATP will employ the gateway paradigm as a means for digital assets to be moved from one network to another through a standardized asset transfer protocol implemented between peer gateways. The same gateway paradigm will be used for data sharing between two networks, when one or both are private networks. Additionally, the  gateway paradigm will be used for the case of coordinated local asset exchanges occurring in two networks.
+To begin addressing these challenges, SATP will employ the gateway paradigm as a means for digital assets to be moved from one network to another through a standardized asset transfer protocol implemented between peer gateways. The same gateway paradigm will be used for data sharing between two networks, when one or both are private networks. Additionally, the gateway paradigm will be used to address the case of coordinated asset exchanges on two separate networks.
 
 Each gateway represents one network or system, and the SAT protocol performs a voluntary transfer of a digital asset from the origin network to a destination network, in such a way that evidence of the transfer can be obtained from both networks by a trusted third-party audit entity in the case of disputes. 
 
-Both the origin and destination network are assumed to share a common understanding of the digital asset and both networks operate under a common legal framework. 
+Both the origin and destination network are assumed to share a common understanding of the digital asset.
 
 There might be several gateways representing the same network or system. When we refer to an asset transfer among two networks, we assume that the same peer gateways representing the networks are participating in the entire asset transfer sequence from the beginning to the end.
 
-In the case of asset transfers, a key requirement of SATP to ensure that the digital asset is valid in one network at any given time. This means that SATP must ensure that the properties of atomicity, consistency, isolation, and durability (ACID) of the underlying networks are satisfied in an asset transfer, and that commitments or rollbacks are supported in the case of a success or failure of the asset transfer operations among the participating networks.
+In the case of asset transfers, a key requirement of SATP to ensure that the digital asset is valid in one network at any given time. This means that SATP must ensure that the properties of atomicity, consistency, isolation, and durability (ACID) of the underlying networks are satisfied in an asset transfer, and that commitments or rollbacks are supported in the case of a success or failure of the asset transfer operations among the participating networks. The starting point for the discussion regarding ACID properties can be found in draft-hardjono-sat-architecture-00.
 
-The atomicity property must guarantee that either a transfer commits entirely (completes) or entirely fails, where failure is taken to mean there is no change to the state of the asset in the origin network.
-
-The property of consistency means that the asset transfer protocol must always leave both networks in a consistent state with regards to the value-bearing data-object representing the asset.
-
-The property of isolation means that while a transfer is occurring from an origin network, no other state changes can occur to the asset. The property of durability means that once the transfer has been committed by both gateways on behalf of the respective networks, the commitment must hold regardless of subsequent unavailability (e.g. crash) of the gateways implementing the transfer protocol.
 
 # Scope
 
-The immediate scope of work for SATP will be a base architecture that utilizes the gateway paradigm in such a way that it permits a common semantic understanding to be shared among the broad cases of asset transfers, data sharing and coordinated local asset exchanges.
+The deliverables of the SATP Working Group will be as follows:
 
-SATP will use existing IETF standards for various aspects of the protocol, including secure channel establishment (TLS), payload formats (e.g. JSON, JOSE, JWT, CBOR, COSE, etc.), digital signatures and encryption (JOSE, JWE), digital certificates (PKIX) and others.
+(1) SATP Architecture: The immediate scope of work for SATP will be a base architecture that utilizes the gateway paradigm that ensures a common semantic understanding to be shared among the modes of asset transfers, data sharing and coordinated asset exchanges.
 
-Specifically, the SATP working group will work on:
+(2) SATP Asset Transfer Protocol: Concurrent with the development of the SATP architecture will be the SATP Asset Transfer Protocol that implements the transfer of a digital asset from one gateway to another, satisfying the ACID properties.
 
-SATP terminology (extending NISTIR-8202 or ISO-22739)
-API-endpoints (e.g. RESTful APIs)
-Resource identifiers
-Message flows and payloads
+(3) SATP Data Sharing Protocol: This mode of the protocol will securely reveal views of data from a network to an authorized external entity using its gateway, in such a way that the correctness and authenticity of the views can be validated by the entity.
+
+(4) SATP Asset Exchange Protocol: This mode of the protocol will perform a coordinated exchange of two assets in two respective networks, with the two corresponding gateways implementing the coordination. Work on this protocol in the SATP working group will begin only after the work on the SATP Asset Transfer Protocol and the SATP Data Sharing protocol has reached their final stages.
+
+(5) SATP Use-Cases: Various real-world use-cases will be collected and described succinctly, with the goal of providing the background to the SATP work.
+
+
+SATP seeks to utilizes common identifiers, message flows and payloads among the above three protocol modes. A common terminology will be defined in the architecture document.
+
+SATP will reuse existing IETF standards for various aspects of the protocol modes, including but not limited to secure channel establishment (TLS), payload formats (e.g., JSON, CBOR, ProtoBuf, etc.), digital signature and encryption (e.g., JOSE, COSE, etc.), digital certificates and tokens (e.g., PKIX, JWT, etc.), and others. SATP may also reuse existing standards from other organizations (e.g., W3C with DIDs).
+
+Legal frameworks are outside of the scope of the SATP work.
+
 
 # Milestones
 
-- SATP Use-Cases document – 6 months
-- SATP Architecture document – 12 months
-- SATP Asset Transfer Protocol document – 12 months
-- SATP Data Sharing document – 12 months
+SATP Architecture document: Adoption - 3 months; Delivery to IESG – 18 months. The likely starting point for the working group will be draft-hardjono-sat-architecture-00.
+
+SATP Asset Transfer Protocol document: Adoption - 3 months; Delivery to IESG – 18 months. The likely starting point for the working group will be draft-hargreaves-sat-core-00.
+
+SATP Data Sharing Protocol document. Adoption - 3 months; Delivery to IESG – 18 months. The likely starting point for the working group will be draft-ramakrishna-sat-views-00.txt.
+
+SATP Use-Cases document: Adoption - 3 months; Delivery to IESG – 12 months. The likely starting point for the working group will be draft-ramakrishna-sat-use-cases-00.txt.
+
 
