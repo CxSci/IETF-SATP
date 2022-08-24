@@ -36,7 +36,7 @@ The deliverables of the SATP Working Group will be as follows:
 (5) SATP Use-Cases: Various real-world use-cases will be collected and described succinctly, with the goal of providing the background to the SATP work.
 
 
-SATP seeks to utilize common identifiers, message flows and payloads among the above three protocol modes. A common terminology will be defined in the architecture document.
+SATP will define common identifiers, message flows and payloads among the above three protocol modes. A common terminology will be defined in the architecture document.
 
 SATP will reuse existing IETF standards for various aspects of the protocol modes, including but not limited to secure channel establishment (TLS), payload formats (e.g., JSON, CBOR, ProtoBuf, etc.), digital signature and encryption (e.g., JOSE, COSE, etc.), digital certificates and tokens (e.g., PKIX, JWT, etc.), and others. SATP may also reuse existing standards from other organizations (e.g., W3C with DIDs).
 
