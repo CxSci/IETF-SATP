@@ -8,9 +8,9 @@
 
 - SATP [Architecture draft](https://datatracker.ietf.org/doc/draft-hardjono-sat-architecture/)
 
-- SATP Use-Cases draft
+- SATP [Use-Cases draft](https://datatracker.ietf.org/doc/draft-ramakrishna-sat-use-cases/)
 
-- SATP Asset Transfer Protocol draft
+- SATP [Asset Transfer Protocol draft](https://datatracker.ietf.org/doc/draft-hargreaves-sat-core/)
 
 - SATP Data Sharing draft
 
