@@ -4,7 +4,7 @@
 
 - The [proposed SATP Charter](https://github.com/CxSci/IETF-SATP/blob/main/charter/satp-charter.md)
 
-## Quick Links to Related documents
+## Links to Relevant documents
 
 - SATP [Architecture draft](https://datatracker.ietf.org/doc/draft-hardjono-sat-architecture/)
 
@@ -12,5 +12,5 @@
 
 - SATP [Asset Transfer Protocol draft](https://datatracker.ietf.org/doc/draft-hargreaves-sat-core/)
 
-- SATP Data Sharing draft
+- SATP Data Sharing draft (soon)
 
