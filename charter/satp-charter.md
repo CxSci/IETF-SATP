@@ -18,7 +18,7 @@ Each gateway represents one network or system, and the SAT protocol performs a v
 
 There might be several gateways representing the same network or system. It is assumed that the same peer gateways representing the networks are participating in the entire asset transfer sequence from the beginning to the end.
 
-In the case of asset transfers, a key requirement of SATP is to ensure that the digital asset is valid in one network at any given time. This means that SATP must ensure that the properties of atomicity, consistency, isolation, and durability (ACID) of the underlying networks are satisfied in an asset transfer, and that commitments or rollbacks are supported in the case of a success or failure of the asset transfer operations among the participating networks. The starting point for the discussion regarding ACID properties can be found in draft-hardjono-sat-architecture-00.
+In the case of asset transfers, a key requirement of SATP is to ensure that the digital asset is valid in one network only at any given time. This means that SATP must ensure that the properties of atomicity, consistency, isolation, and durability (ACID) of the underlying networks are satisfied in an asset transfer, and that commitments or rollbacks are supported in the case of a success or failure of the asset transfer operations among the participating networks. The starting point for the discussion regarding ACID properties can be found in draft-hardjono-sat-architecture-00.
 
 
 # Scope
