@@ -6,7 +6,7 @@
 
 ## Quick Links to Related documents
 
-- SATP Architecture draft
+- SATP [Architecture draft] (https://datatracker.ietf.org/doc/draft-hardjono-sat-architecture/)
 
 - SATP Use-Cases draft
 
