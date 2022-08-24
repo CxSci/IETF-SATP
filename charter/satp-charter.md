@@ -16,7 +16,7 @@ To begin addressing these challenges, SATP will employ the gateway paradigm as a
 
 Each gateway represents one network or system, and the SAT protocol performs a voluntary transfer of a digital asset from the origin network to a destination network, in such a way that evidence of the transfer can be obtained from both networks by a trusted third-party audit entity in the case of disputes. Both the origin and destination networks are assumed to share a common understanding of the digital asset.
 
-There might be several gateways representing the same network or system. In the case of an asset transfer between two networks, it is assumed that the same peer gateways representing the networks are participating in the entire asset transfer sequence from the beginning to the end.
+There might be several gateways representing the same network or system. It is assumed that the same peer gateways representing the networks are participating in the entire asset transfer sequence from the beginning to the end.
 
 In the case of asset transfers, a key requirement of SATP is to ensure that the digital asset is valid in one network at any given time. This means that SATP must ensure that the properties of atomicity, consistency, isolation, and durability (ACID) of the underlying networks are satisfied in an asset transfer, and that commitments or rollbacks are supported in the case of a success or failure of the asset transfer operations among the participating networks. The starting point for the discussion regarding ACID properties can be found in draft-hardjono-sat-architecture-00.
 
