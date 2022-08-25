@@ -18,7 +18,7 @@ Each gateway represents one network or system, and the SAT protocol performs a v
 
 There might be several gateways representing the same network or system. It is assumed that the same peer gateways representing the networks are participating in the entire asset transfer sequence from the beginning to the end.
 
-In the case of asset transfers, a key requirement of SATP is to ensure that the digital asset is valid in one network only at any given time. This means that SATP must ensure that the properties of atomicity, consistency, isolation, and durability (ACID) of the underlying networks are satisfied in an asset transfer, and that commitments or rollbacks are supported in the case of a success or failure of the asset transfer operations among the participating networks. The starting point for the discussion regarding ACID properties can be found in draft-hardjono-sat-architecture-00.
+In the case of asset transfers, a key requirement of SATP is to ensure that the digital asset is valid in one network only at any given time. This means that SATP must ensure that the properties of atomicity, consistency, isolation, and durability (ACID) of the underlying networks are satisfied in an asset transfer, and that commitments or rollbacks are supported in the case of a success or failure of the asset transfer operations among the participating networks. The starting point for the discussion regarding ACID properties can be found in [draft-hardjono-sat-architecture-00](https://datatracker.ietf.org/doc/draft-hardjono-sat-architecture/00/).
 
 
 # Scope
@@ -45,12 +45,12 @@ Legal frameworks are outside of the scope of the SATP work.
 
 # Milestones
 
-SATP Architecture document: Adoption - 3 months; Delivery to IESG – 18 months. The likely starting point for the working group will be draft-hardjono-sat-architecture-00.
+SATP Architecture document: Adoption - 3 months; Delivery to IESG – 18 months. The likely starting point for the working group will be [draft-hardjono-sat-architecture-00](https://datatracker.ietf.org/doc/draft-hardjono-sat-architecture/00/).
 
-SATP Asset Transfer Protocol document: Adoption - 3 months; Delivery to IESG – 18 months. The likely starting point for the working group will be draft-hargreaves-sat-core-00.
+SATP Asset Transfer Protocol document: Adoption - 3 months; Delivery to IESG – 18 months. The likely starting point for the working group will be [draft-hargreaves-sat-core-00](https://datatracker.ietf.org/doc/draft-hargreaves-sat-core/).
 
 SATP Data Sharing Protocol document. Adoption - 3 months; Delivery to IESG – 18 months. The likely starting point for the working group will be draft-ramakrishna-sat-views-00.txt.
 
-SATP Use-Cases document: Adoption - 3 months; Delivery to IESG – 12 months. The likely starting point for the working group will be draft-ramakrishna-sat-use-cases-00.txt.
+SATP Use-Cases document: Adoption - 3 months; Delivery to IESG – 12 months. The likely starting point for the working group will be [draft-ramakrishna-sat-use-cases-00.txt](https://datatracker.ietf.org/doc/draft-ramakrishna-sat-use-cases/).
 
 
