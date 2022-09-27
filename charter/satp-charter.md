@@ -8,7 +8,7 @@ There is currently an interoperability problem in many digital asset networks, w
 
 One example is the private shipping logistics networks where the digital Bill of Lading as the value-bearing data-object is not accessible to external entities, such as trade finance networks, seeking to issue Letters of Credit based on the Bill of Lading. A second example is regulated digital representations of real-world private assets, such as property ownership certificates, and regulated government-issued digital currencies.
 
-The goal of the Secure Asset Transfer Protocol (SATP) working group will be to develop a standard protocol which operates between two peer gateways for the purpose of transferring digital assets and data between an originator in the origin network to a beneficiary in destination network.
+The goal of the Secure Asset Transfer Protocol (SATP) working group will be to develop a standard protocol which operates between two peer gateways for the purpose of transferring digital assets and asset-related data between an originator in the origin network to a beneficiary in destination network.
 
 # Problem space and architecture
 
