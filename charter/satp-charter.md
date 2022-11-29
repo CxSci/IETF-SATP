@@ -27,22 +27,26 @@ In the case of asset transfers, a key requirement of SATP is to ensure that the 
 
 The deliverables of the SATP Working Group will be as follows:
 
-(1) SATP Architecture: The immediate scope of work for SATP will be a base architecture that utilizes the gateway paradigm that ensures a common semantic understanding to be shared among the message flows pertaining to asset transfers, the sharing of asset-related data and the coordinated asset exchanges.
+(1) Architecture: SATP will deliver a document describing a base architecture that utilizes the gateway paradigm, including a set of assumptions underlying the architecture.
 
-(2) Asset Transfer Message Flow: The asset transfer message flow implements the transfer of a digital asset from one gateway to another, satisfying the ACID properties.
+(2) Asset Transfer Protocol: The asset transfer protocol specifies the message flow between two gateways performing the transfer of ownership of a digital asset across the two asset networks respectively, satisfying the ACID properties.
 
-(3) Asset-Related Data Sharing Message Flow: This message flow will securely reveal views of asset-related data from an asset network to an authorized external entity using its gateway, in such a way that the correctness and authenticity of the views can be validated by the entity.
+(3) Use-Cases: Various real-world use-cases will be collected and described succinctly, with the goal of providing the background to the SATP work.
 
-(4) Asset Exchange Message Flow: This message flow will perform a coordinated exchange of two assets in two respective asset networks, with the two corresponding gateways implementing the coordination. Work on this message flow in the SATP working group will commence only after the work on other two flows have reached their final stages.
-
-(5) SATP Use-Cases: Various real-world use-cases will be collected and described succinctly, with the goal of providing the background to the SATP work.
+SATP will define common identifiers, message flows and payloads. A common terminology will be defined in the architecture document.
 
 
-SATP will define common identifiers, message flows and payloads among the above three protocol modes. A common terminology will be defined in the architecture document.
-
-SATP will reuse existing IETF standards for various aspects of the protocol modes, including but not limited to secure channel establishment (TLS), payload formats (e.g., JSON, CBOR, ProtoBuf, etc.), digital signature and encryption (e.g., JOSE, COSE, etc.), digital certificates and tokens (e.g., PKIX, JWT, etc.), and others. SATP may also reuse existing standards from other organizations (e.g., W3C with DIDs).
+SATP will coordinate with other IETF working groups (e.g. SCITT, TIGRESS, RATS), and will reuse existing IETF standards for various aspects of the protocol. This includes, but not limited to, the secure channel establishment (TLS), payload formats (e.g., JSON, CBOR, ProtoBuf, etc.), digital signature and encryption (e.g., JOSE, COSE, etc.), digital certificates and tokens (e.g., PKIX, JWT, etc.), and others. SATP may also reuse existing standards from other organizations (e.g., W3C with DIDs).
 
 Legal frameworks are outside of the scope of the SATP work.
+
+The following are future possible extensions to the SATP asset transfer protocol:
+
+Asset-Related Data Sharing: This extension will securely reveal views of asset-related data from an asset network to an authorized external entity using its gateway, in such a way that the correctness and authenticity of the views can be validated by the entity.
+
+Asset Exchange: This extension will perform a coordinated exchange of two assets in two respective asset networks, with the two corresponding gateways implementing the coordination.
+
+Gateway identification & discovery: This extension will address the identification of each gateway, and the mechanisms for entities to discover gateways serving a given network.
 
 
 # Milestones
@@ -50,8 +54,6 @@ Legal frameworks are outside of the scope of the SATP work.
 SATP Architecture document: Adoption - 3 months; Delivery to IESG – 18 months. The likely starting point for the working group will be [draft-hardjono-sat-architecture-00](https://datatracker.ietf.org/doc/draft-hardjono-sat-architecture/00/).
 
 Asset Transfer Message Flow document: Adoption - 3 months; Delivery to IESG – 18 months. The likely starting point for the working group will be [draft-hargreaves-sat-core-00](https://datatracker.ietf.org/doc/draft-hargreaves-sat-core/).
-
-Asset-Related Data Sharing Message Flow document. Adoption - 3 months; Delivery to IESG – 18 months. The likely starting point for the working group will be draft-ramakrishna-sat-views-00.txt.
 
 SATP Use-Cases document: Adoption - 3 months; Delivery to IESG – 12 months. The likely starting point for the working group will be [draft-ramakrishna-sat-use-cases-00.txt](https://datatracker.ietf.org/doc/draft-ramakrishna-sat-use-cases/).
 
