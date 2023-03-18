@@ -1,4 +1,4 @@
-# SATP Vocabulary Document
+# SATP Terminology Document
 
 | Term | Description | Source of Reference |
 | --- | --- | --- |
