@@ -18,6 +18,8 @@
 | Gateway | The collection of services which connects to a minimum of one network or system, and which implements the secure asset transfer protocol.| SATP Architecture v03 |
 | Origin (Network) | The current network where the digital asset is located. | Message Diagram v16 |
 | Destination (Network) | The network to which a digital asset is to be transferred. | Message Diagram v16 |
+| Originator | The natural or legal person as the owner or holder of a digital asset who authorized the transfer to the asset to a beneficiary. | FATF Recommendations #16 (Feb 2023) |
+| Beneficiary  | The natural or legal person or legal arrangement who is identified by the originator as the receiver of the requested digital asset transfer. | FATF Recommendations #16 (Feb 2023) |
 | Transaction | A recording of an event, such as the transfer of assets between parties, or the creation of new assets. | NIST-IR-8202 |
 | Burn (Burning):  | A transaction carried-out on a digital asset within a network that destroys the value associated with the digital asset. | |
 | Mint (Minting) | A transaction carried-out within a network creates a new digital asset associated with an economic value. | |
