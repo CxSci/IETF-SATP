@@ -14,10 +14,10 @@
 | Digital Asset Owner | Person or organization whop is the legal owner of a digital asset.| |
 | Digital Asset Holder | Person or organization who is authorized to hold the private-key associated with a given digital asset.| |
 | Double Spend | Transacting with the same set of digital assets more than once. | NIST-IR-8202 |
-| Network | | Message Diagram v16 |
-| Gateway | | Message Diagram v16 |
-| Origin | | Message Diagram v16 |
-| Destination | | Message Diagram v16 |
+| Network (Asset Network) | One or more computer systems, possible arranged in a distributed manner, which holds a digital asset that is recognized by all participants in the network.  | Message Diagram v16 |
+| Gateway | The collection of services which connects to a minimum of one network or system, and which implements the secure asset transfer protocol.| SATP Architecture v03 |
+| Origin (Network) | The current network where the digital asset is located. | Message Diagram v16 |
+| Destination (Network) | The network to which a digital asset is to be transferred. | Message Diagram v16 |
 | Transaction | A recording of an event, such as the transfer of assets between parties, or the creation of new assets. | NIST-IR-8202 |
 | Burn (Burning):  | A transaction carried-out on a digital asset within a network that destroys the value associated with the digital asset. | |
 | Mint (Minting) | A transaction carried-out within a network creates a new digital asset associated with an economic value. | |
