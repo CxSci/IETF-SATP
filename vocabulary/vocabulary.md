@@ -19,5 +19,7 @@
 | Origin | | Message Diagram v16 |
 | Destination | | Message Diagram v16 |
 | Transaction | A recording of an event, such as the transfer of assets between parties, or the creation of new assets. | NIST-IR-8202 |
-| Transfer | | Message Diagram v16 |
-| XXXXXXXXX | XXXXXXXXX | NIST-IR-8202 |
+| Burn (Burning):  | A transaction carried-out on a digital asset within a network that destroys the value associated with the digital asset. | |
+| Mint (Minting) | A transaction carried-out within a network creates a new digital asset associated with an economic value. | |
+| Asset transfer (cross network) | The transferal of value associated with the digital asset from one network to another, involving the coordinated destruction (burning) of the digital asset in the origin network and the creation (minting) of a new equivalent digital asset in the destination network. | |
+| XXXXXXXXX | YYYYYYY | ZZZZZZZ |
