@@ -3,8 +3,8 @@
 | Term | Description | Source of Reference |
 | --- | --- | --- |
 | Address | A short, alphanumeric string derived from a user’s public key using a hash function, with additional data to detect errors. Addresses are used to send and receive digital assets. | NIST-IR-8202 |
-| Asset Status | | |
-| Asset Lock |The temporary of disablement of any technical changes to the state of a digital asset. | Message Diagram v16 |
+| Asset Status | The set of data, parameters and keys that define the state of a digital asset within a network. | |
+| Asset Lock | The temporary of disablement of any technical changes to the state of a digital asset. The technical mechanism to implement a lock is dependent on the specific network. | Message Diagram v16 |
 | Asset Binding | | Message Diagram v16|
 | Asset Assignment | | Message Diagram v16 |
 | Blockchain | Blockchains are distributed digital ledgers of cryptographically signed transactions that are grouped into blocks. Each block is cryptographically linked to the previous one (making it tamper evident) after validation and undergoing a consensus decision. As new blocks are added, older blocks become more difficult to modify (creating tamper resistance). New blocks are replicated across copies of the ledger within the network, and any conflicts are resolved automatically using established rules. | NIST-IR-8202 |
