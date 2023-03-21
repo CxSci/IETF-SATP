@@ -10,7 +10,6 @@
 | Blockchain | Blockchains are distributed digital ledgers of cryptographically signed transactions that are grouped into blocks. Each block is cryptographically linked to the previous one (making it tamper evident) after validation and undergoing a consensus decision. As new blocks are added, older blocks become more difficult to modify (creating tamper resistance). New blocks are replicated across copies of the ledger within the network, and any conflicts are resolved automatically using established rules. | NIST-IR-8202 |
 | Digital Asset | Any asset that is purely digital, or is a digital representation of a physical asset. | NIST-IR-8202 |
 | Digital Asset Owner | Person or organization whop is the legal owner of a digital asset.| |
-| Digital Asset Holder | Person or organization who is authorized to hold the private-key associated with a given digital asset.| |
 | Double Spend | Transacting with the same set of digital assets more than once. | NIST-IR-8202 |
 | Network (Asset Network) | One or more computer systems, possible arranged in a distributed manner, which holds a digital asset that is recognized by all participants in the network.  | Message Diagram v16 |
 | Gateway | The collection of services which connects to a minimum of one network or system, and which implements the secure asset transfer protocol.| SATP Architecture v03 |
