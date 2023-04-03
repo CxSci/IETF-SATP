@@ -9,10 +9,11 @@
 | Asset Assignment | | Message Diagram v16 |
 | Blockchain | Blockchains are distributed digital ledgers of cryptographically signed transactions that are grouped into blocks. Each block is cryptographically linked to the previous one (making it tamper evident) after validation and undergoing a consensus decision. As new blocks are added, older blocks become more difficult to modify (creating tamper resistance). New blocks are replicated across copies of the ledger within the network, and any conflicts are resolved automatically using established rules. | NIST-IR-8202 |
 | Digital Asset | Any asset that is purely digital, or is a digital representation of a physical asset. | NIST-IR-8202 |
-| Digital Asset Owner | Person or organization whop is the legal owner of a digital asset.| |
+| Digital Asset Owner | Person or organization who is the legal owner of a digital asset.| |
 | Double Spend | Transacting with the same set of digital assets more than once. | NIST-IR-8202 |
 | Network (Asset Network) | One or more computer systems, possible arranged in a distributed manner, which holds a digital asset that is recognized by all participants in the network.  | Message Diagram v16 |
-| Gateway | The collection of services which connects to a minimum of one network or system, and which implements the secure asset transfer protocol.| SATP Architecture v03 |
+| Gateway | Gateways are autonomous systems
+that deliver messages to other gateways, following the end-to- end principle, where the application layer delegates message delivery reliability, data encryption, and key management to a gateway (transport layer. It comprises the collection of services which connects to a minimum of one network or system, and which implements the secure asset transfer protocol.| SATP Architecture v03, [Hermes](https://www.techrxiv.org/articles/preprint/HERMES_Fault-Tolerant_Middleware_for_Blockchain_Interoperability/14120291) |
 | Origin (Network) | The current network where the digital asset is located. | Message Diagram v16 |
 | Destination (Network) | The network to which a digital asset is to be transferred. | Message Diagram v16 |
 | Originator | The natural or legal person as the owner or holder of a digital asset who authorized the transfer to the asset to a beneficiary. | FATF Recommendations #16 (Feb 2023) |
@@ -20,5 +21,7 @@
 | Transaction | A recording of an event, such as the transfer of assets between parties, or the creation of new assets. | NIST-IR-8202 |
 | Burn (Burning):  | A transaction carried-out on a digital asset within a network that destroys the value associated with the digital asset. | |
 | Mint (Minting) | A transaction carried-out within a network creates a new digital asset associated with an economic value. | |
-| Asset transfer (cross network) | The transferal of value associated with the digital asset from one network to another, involving the coordinated destruction (burning) of the digital asset in the origin network and the creation (minting) of a new equivalent digital asset in the destination network. | |
+| Asset transfer (cross network) | The transferal of value associated with the digital asset from one network to another, involving the coordinated destruction (burning) of the digital asset in the origin network and the creation (minting) of a new equivalent digital asset in the destination network. | | Light Client |   Light clients are network nodes that are solely part of the blockchain history, i.e., relevant transactions (vs. full clients that store the whole blockchain history). They can verify that a transaction was included in the blockchain, typically using block headers (e.g., via Merkle proof)| [Do you need a blockchain interoperability solution](https://dl.acm.org/doi/10.1145/3564532) |
+
+
 | XXXXXXXXX | YYYYYYY | ZZZZZZZ |
