@@ -1,34 +1,28 @@
 ## DLT Gateway Crash Recovery Specification
 ### draft-belchior-blockchain-gateway-recovery-05
 
-#### R. Belchior (INESC-ID, Instituto Superior Tecnico)
+#### R. Belchior (INESC-ID, Instituto Superior Tecnico, MIT)
+#### A. Augusto (INESC-ID, Instituto Superior Tecnico)
 #### M. Correia (INESC-ID, Instituto Superior Tecnico)
 #### T. Hardjono (MIT)
 
 ### Abstract
-This memo describes the crash recovery mechanism for the Open Digital Asset Protocol (ODAP), called ODAP-2PC.
-The goal is to assure gateways running ODAP to be able to recover from crashes, and thus preserve the consistency of an asset across ledgers 
-(i.e., double spend does not occur).
+This memo describes the crash recovery mechanism for the Secure Asset Transfer Protocol (SATP). The goal of this draft is to specify the message flow that implements a crash recovery mechanism. The mechanism assures that gateways running SATP are able to recover faults, enforcing ACID properties for asset transfers across ledgers (i.e., double spend does not occur).
 
-This draft includes the description of the messaging and logging flow necessary for the correct functioning of  ODAP-2PC.
 
 ### 1. Introduction
 
-Gateway systems that perform virtual asset transfers among DLTs must possess a degree of resiliency and fault tolerance in the face of possible crashes. Accounting for the possibility of crashes is
+Gateway systems that perform digital asset transfers among DLTs must possess a degree of resiliency and fault tolerance in the face of possible crashes. Accounting for the possibility of crashes is
 particularly important to guarantee asset consistency across DLTs.
 
-ODAP-2PC [HERMES] uses 2PC, an atomic commitment protocol (ACP).
-2PC considers two roles: a coordinator who manages the protocol's execution and participants who manage the resources that must be kept consistent. The source gateway plays the ACP role of Coordinator, and the recipient gateway plays the Participant role in relay mode. Gateways exchange messages corresponding to the protocol execution, generating log entries for each one.
+The crash recovering mechanism is applied to a version of SATP [HERMES] using either 2PC or 3PC, which are atomic commitment protocol (ACP).
+2PC and 3PC considers two roles: a coordinator who manages the protocol's execution and participants who manage the resources that must be kept consistent. The origin gateway plays the ACP role of Coordinator, and the destination Gateway plays the Participant role in relay mode. Gateways exchange messages corresponding to the protocol execution, generating log entries for each one.
 
-Log entries are organized into logs. Logs enable either the same or other backup gateways to resume any phase of ODAP. This log can also serve as an accountability tool in case of disputes.
-Another key component is an atomic commit protocol (ACP) that guarantees that the source and target DLTs are modified consistently (atomicity) and permanently (durability), e.g., that assets that are taken from the source DLT are persisted into the recipient DLT.
-
-Log entries are then the basis satisfying one of the key deployment requirements of gateways for asset transfers:
-a high degree of availability. In this document, we consider two common strategies to increase availability: (1) to support the recovery of the gateways (self-healing model) and (2) to employ backup gateways with the ability to resume a stalled transfer (primary-backup model) [HERMES].
+Log entries are organized into logs. Logs enable either the same or other backup gateways to resume any phase of SATP. This log can also serve as an accountability tool in case of disputes. Log entries are then the basis satisfying one of the key deployment requirements of gateways for asset transfers: a high degree of availability. In this document, we consider two common strategies to increase availability: (1) to support the recovery of the gateways (self-healing model) and (2) to employ backup gateways with the ability to resume a stalled transfer (primary-backup model) [HERMES].
 
 
 This memo proposes:
-(i) the logging model of ODAP-2PC;
+(i) the logging model of the crash recovery mechanism;
 (ii) the log storage types;
 (iii) the log storage API;
 (iv)  the log entry format;
@@ -37,8 +31,7 @@ This memo proposes:
 
 ### 2. Terminology
 
-* Gateway: The nodes of a DLT system that are functionally capable of handling an asset transfer with another DLT. Gateway nodes implement the gateway-to-gateway asset transfer protocol.
-
+* Gateway: The collection of services which connects to a minimum of one network or system, and which implements the secure asset transfer protocol.	
 
 * Primary Gateway: The node of a DLT system that has been selected or elected to act as a gateway in an asset transfer.
 
@@ -49,17 +42,10 @@ This memo proposes:
 * Message Flow Parameters: The parameters and payload employed in a message flow between a sending gateway and receiving gateway.
 
 
-* Source Gateway: The gateway that initiates the transfer protocol. Acts as a coordinator of the ACP and mediates the message flow.
+* Origin Gateway: The gateway that initiates the transfer protocol. Acts as a coordinator of the ACP and mediates the message flow.
 
 
-* Recipient Gateway: The gateway that is the target of an asset transfer. It follows instructions from the source gateway.
-
-
-* Source DLT: The DLT of the source gateway.
-
-
-* Recipient DLT: The DLT of the recipient gateway.
-
+* Destination Gateway: The gateway that is the target of an asset transfer. It follows instructions from the origin Gateway.
 
 * Log: Set of log entries such that those are ordered by the time of its creation.
 
@@ -88,13 +74,14 @@ This memo proposes:
 * Crash-fault tolerant models: the models allowing a system to keep operating correctly despite having a set of faulty components.
 
 
-* Digital asset: a form of digital medium record used as a digital representation of a tangible or intangible asset.
+Please refer to the vocabulary reference [VOC] for terms used across the SATP drafts.
+
 
 ### 3. Logging Model
 We consider the log file to be a stack of log entries. Each time a log entry is added, it goes to the top of the stack (the highest index).
 For each protocol step a gateway performs, a log entry is created immediately before executing and immediately after executing a given operation.
 
-To manipulate the log, we define a set of log primitives that translate log entry requests from a process into log entries, realized by the log storage API (for the context of ODAP, Section 3.5):
+To manipulate the log, we define a set of log primitives that translate log entry requests from a process into log entries, realized by the log storage API (for the context of SATP, Section 3.5):
 
 1. writeLogEntry(e,L) (WRITE) - appends a log entry e in the log L (held by the corresponding Log Storage Support).
 
@@ -112,7 +99,7 @@ From these primitives, other functions can be built:
 
 7. updateLog(l1,l2): updates l1 based on l2 (uses getLogDiff and writeLogEntry).
 
-Example 3.1 shows a simplified version log referring to the transfer initiation flow ODAP phase. Each log entry
+Example 3.1 shows a simplified version log referring to the transfer initiation flow SATP phase. Each log entry
 (simplified, see the definition in Section 3) is composed of metadata (phase, sequence number) and one attribute from the payload (operation).
 Operations map behavior to state (see Section 3).
 
@@ -128,7 +115,7 @@ The column Returns specifies what the contents of "response_data" mean. The colu
       │             [1]: writeLogEntry <1,1,init-validate>             │    
       │ ───────────────────────────────────────────────────────────────>    
       │                        │                                       │    
-      │ initiate ODAP's phase 1│                                       │    
+      │ initiate SATP's phase 1│                                       │    
       │ ───────────────────────>                                       │    
       │                        │                                       │    
       │                        │ [2]: writeLogEntry <1,2,exec-validate>│    
@@ -150,7 +137,7 @@ The column Returns specifies what the contents of "response_data" mean. The colu
      │G1│                     │G2│                                 │Log API│
      └──┘                     └──┘                                 └───────┘
 
-Example 2.1 shows the sequence of logging operations over part of the first phase of ODAP (simplified):
+Example 2.1 shows the sequence of logging operations over part of the first phase of SATP (simplified):
 
 1. At step 1, G1 writes an init-validate operation, meaning it will require G2 to initiate the validate function:
    This step generates a log entry (p1, 1, init-validate).
@@ -164,23 +151,21 @@ Example 2.1 shows the sequence of logging operations over part of the first phas
 4. At step 4, G2 writes an ack-validate operation, meaning it will send an acknowledgment to G1 regarding the done-validate:
    This step generates a log entry (p1, 4, ack-validate).
 
-
+Without loss of generality, the above logging model applies to all phases of SATP.
 
 
 #### 3.2 Log Storage Modes
-Gateways store state mapped by logs. Gateways have private logs recording enterprise-sensitive data that can be used, for instance, for analytics (enterprise log).
+Gateways store state that is captured by logs. Gateways have private logs recording enterprise-sensitive data that can be used, for instance, for analytics.
 Entries can include end-to-end cross-jurisdiction transaction latency and throughput.
 
-Apart from the enterprise log, a state log can be public or private, centralized or decentralized. This log is meant to be shared with everyone with an Internet connection (public) or only within the gateway consortium (private).
-Logs can be stored locally or in a cloud service, per gateway (centralized), or in a decentralized infrastructure (i.e., decentralized ledger, decentralized database). We call the latter option decentralized log storage.
-The type of the state log depends on the trust assumptions among gateways and the access mode [ODAP].
+Apart from the enterprise log, a state log can be public or private, centralized or decentralized. This log is meant to be shared with everyone with an internet connection (public) or only within the gateway consortium (private). Logs can be stored locally or in a cloud service, per gateway (centralized), or in a decentralized infrastructure (i.e., decentralized ledger, decentralized database). We call the latter option decentralized log storage. The type of the state log depends on the trust assumptions among gateways and the log access mode.
 
 In greater detail:
 1. Public decentralized log: log entries are stored on a decentralized public log (e.g., Ethereum blockchain, IPFS). Each gateway writes non-encrypted log entries to a decentralized log storage.
-   Although this is the best option for providing accountability of gateways, availability, and integrity of the logs, leading to shorter dispute resolution, this can lead to privacy issues.
+   Although this is the best option for providing accountability of gateways, availability, and integrity of the logs, leading to shorter dispute resolution, this can lead to leak of information which can lead to privacy issues.
    The integrity of the log can be asserted by hashing the entries and comparing it to each stored hash on the decentralized log storage.
-   A solution to the privacy problems could be given by gateways publishing a hash of the log entry plus metadata to the decentralized log storage instead of the log entries. Although this is a first step towards resolving privacy issues, a tradeoff with data availability is done.
-   In particular, this choice leads to lower availability guarantees since a gateway needs to wait for the counter-party gateway to deliver the logs in case logs need to be shared. In this case, the decentralized log storage acts as a notarizing service.
+   A solution to the privacy problems could be given by gateways publishing a hash of the log entry plus metadata to the decentralized log storage instead of the log entries. Although this is a first step towards resolving privacy issues, a tradeoff with data availability exists.
+   In particular, this choice leads to lower availability guarantees since a gateway needs to wait for the counterparty gateway to deliver the logs in case logs need to be shared. In this case, the decentralized log storage acts as a notarizing service.
    This mode is recommended when gateways operate in the  Relay Mode: Client-initiated Gateway to Gateway. This mode can also be used by the Direct Mode: Client to Multiple Gateway access mode because gateways may need to share state between themselves.
    Note: the difference between the mentioned modes is that in Direct Mode: Client to Multiple Gateway, a single client/organization controls all the gateways, whereas, in the Relay Mode, gateways are controlled by different organizations.
 
@@ -188,19 +173,19 @@ In greater detail:
 2. Public centralized log: log entries are published in a bulletin that more organizations control. That bulletin can be updated or removed at any time. Accountability is only guaranteed provided that there are multiple copies of such bulletin by conflicting parties.
    Availability and integrity can be obtained via redundancy.
 
-3. Private centralized log. Each gateway stores logs locally or in a cloud in the private log storage mode but does not share them by default with other gateways. If needed, logs are requested from the counter-party gateway.
+3. Private centralized log. Each gateway stores logs locally or in a cloud in the private log storage mode but does not share them by default with other gateways. If needed, logs are requested from the counterparty gateway.
    Saving logs locally is faster than saving them on the respective ledger since issuing a transaction is several orders of magnitude slower than writing on a disk or accessing a cloud service.
    Nonetheless, this model delivers weaker integrity and availability guarantees.
 
 
-Each log storage mode provides a different process to recover the state from crashes. In the private log, a gateway requires the most recent log from the counter-party gateway. This mode is the one where the most trust is needed.
+4. Private decentralized log. Each gateway stores logs in a private blockchain, and are shared with other gateways by default [BVC19]. 
+
+
+Each log storage mode provides a different process to recover the state from crashes. In the private log, a gateway requires the most recent log from the counterparty gateway. This mode is the one where the most trust is needed.
 The gateway publishes hashes of log entries and metadata on a decentralized log storage in the centralized public log. Gateways who need the logs request them from other gateways and perform integrity checks of the received logs.
 In the public decentralized mode, the gateways publish the plain log entries on decentralized log storage. This is the most trustless and decentralized mode of operation.
 
 By default, if there are gateways from different institutions involved in an asset transfer, the storage mode should be a decentralized log storage. The decentralized log storage can provide a common source of truth to solve disputes and maintain a shared state, alleviating trust assumptions between gateways.
-
-
-
 
 
 #### 3.3 Log Storage API
@@ -237,22 +222,19 @@ and 2) response_data: contains the payload of the response generated by the log 
 
 ## 4. Format of log entries
 
-A gateway stores the log entries in its log, and they capture gateways operations. Entries account for the current status of one of the three ODAP flows: Transfer Initiation flow, Lock-Evidence flow, and Commitment Establishment flow.
+A gateway stores the log entries in its log, and they capture gateways operations. Entries account for the current status of one of the three SATP flows: Transfer Initiation flow, Lock-Evidence flow, and Commitment Establishment flow.
 
 The recommended format for log entries is JSON, with protocol-specific mandatory fields supporting a free format field for plaintext or encrypted payloads directed at the DLT gateway or an underlying DLT. Although the recommended format is JSON, other formats can be used (e.g., XML).
 
+The mandatory fields of a log entry, that SATP generates, are:
 
-
-
-The mandatory fields of a log entry, that ODAP generates, are:
-
-- Version: ODAP protocol Version (major, minor).
+- Version: SATP protocol Version (major, minor).
 
 - Session ID: a unique identifier (UUIDv2) representing a session.
 
 - Sequence Number: monotonically increasing counter that uniquely represents a message from a session.
 
-- ODAP Phase: current ODAP phase.
+- SATP Phase: current SATP phase.
 
 - Resource URL: Location of Resource to be accessed.
 
@@ -268,22 +250,22 @@ The mandatory fields of a log entry, that ODAP generates, are:
 
 - Application Profile: Vendor or Application-specific profile
 
-- Payload: Payload for POST, responses, and native DLT transactions. The payload is specific to the current ODAP phase.
+- Payload: Payload for POST, responses, and native DLT transactions. The payload is specific to the current SATP phase.
 
 - Payload Hash: hash of the current message payload.
 
 
-In addition to the attributes that belong to ODAP s schema, each log entry REQUIRES the following attributes:
+In addition to the attributes that belong to SATP s schema, each log entry REQUIRES the following attributes:
 
 * timestamp REQUIRED: timestamp referring to when the log entry was generated (UNIX format).
 
-* source_gateway_pubkey REQUIRED: the public key of the gateway initiating a transfer.
+* origin_gateway_pubkey REQUIRED: the public key of the gateway initiating a transfer.
 
-* source_gateway_dlt_system REQUIRED: the ID  of the source DLT.
+* origin_gateway_dlt_system REQUIRED: the ID  of the source DLT.
 
-* recipient_gateway_pubkey REQUIRED: the public key of the gateway involved in a transfer.
+* destination_gateway_pubkey REQUIRED: the public key of the gateway involved in a transfer.
 
-* recipient_gateway_dlt_system REQUIRED: the ID of the recipient gateway involved in a transfer.
+* destination_gateway_dlt_system REQUIRED: the ID of the destination Gateway involved in a transfer.
 
 * logging_profile REQUIRED: contains the profile regarding the logging procedure. Default is a local store.
 
@@ -313,16 +295,16 @@ Optional log entry fields are:
 
 * recovery payload: the payload associated with the recovery message.
 
-Example of a log entry created by G1, corresponding to locking an asset (phase 2.3 of the ODAP protocol) :
+Example of a log entry created by G1, corresponding to locking an asset (phase 2.3 of the SATP protocol) :
 
 ``{
 "sessionId": "4eb424c8-aead-4e9e-a321-a160ac3909ac",
 "seqNumber": 6,
 "phaseId": "lock",
-"sourceGatewayId": "5.47.165.186",
-"sourceDltId": "Hyperledger-Fabric-JusticeChain",
-"targetGatewayId": "192.47.113.116",
-"targetDltId": "Ethereum",
+"originGatewayId": "5.47.165.186",
+"originDltId": "Hyperledger-Fabric-JusticeChain",
+"destinationGatewayId": "192.47.113.116",
+"destinationDltId": "Ethereum",
 "timestamp": "1606157330",
 "payload": {
 "messageType": "2pc-log",
@@ -335,16 +317,16 @@ Example of a log entry created by G1, corresponding to locking an asset (phase 2
 
 
 
-Example of a log entry created by G2, acknowledging G1 locking an asset (phase 2.4 of the ODAP protocol) :
+Example of a log entry created by G2, acknowledging G1 locking an asset (phase 2.4 of the SATP protocol) :
 
 ``{
 "sessionId": "4eb424c8-aead-4e9e-a321-a160ac3909ac",
 "seqNumber": 7,
 "phaseId": "lock",
-"sourceGatewayId": "5.47.165.186",
-"sourceDltId": "Hyperledger-Fabric-JusticeChain",
-"targetGatewayId": "192.47.113.116",
-"targetDltId": "Ethereum",
+"originGatewayId": "5.47.165.186",
+"originDltId": "Hyperledger-Fabric-JusticeChain",
+"destinationGatewayId": "192.47.113.116",
+"destinationDltId": "Ethereum",
 "timestamp": "1606157333",
 "payload": {
 "messageType": "2pc-log",
@@ -357,9 +339,8 @@ Example of a log entry created by G2, acknowledging G1 locking an asset (phase 2
 }``
 
 
-## 5. ODAP-2PC
+## 5. Crash Recovery Procedure
 This section defines general considerations about crash recovery.
-ODAP-2PC is the application of the gateway crash recovery mechanism to asset transfers across all ODAP phases.
 
 ### 5.1 Crash Recovery Model
 Gateways can fail by crashing (i.e., becoming silent). In order to be able to recover from these crashes, gateways store log entries in a persistent data storage. Thus, gateways can recover by obtaining the latest successful operation and continuing from there. We consider two recovery models:
@@ -379,53 +360,52 @@ In both modes, after a gateway recovers, the gateways follow a general recovery 
 
 3. Recovery communication: The gateway and informs other gateways of the recovery with a recovery confirmation message is sent (RECOVERY-CONFIRM), and the respective acknowledgment is sent by the counterparty gateway (RECOVERY-ACK).
 
-Finally, the gateway resumes the normal execution of ODAP.
+Finally, the gateway resumes the normal execution of SATP.
 
 ### 5.2 Recovery Procedure
-The previous section explained the general procedure that gateways follow upon crashing. In more detail, for each ODAP phase, we define the recovery procedure called ODAP-2PC:
+The previous section explained the general procedure that gateways follow upon crashing. In more detail, for each SATP phase, we define the recovery procedure:
 
 #### 5.2.1 Transfer  Initiation  Flow
-This phase of ODAP follows the Crash Recovery Model from Section 5.1.
+This phase of SATP follows the Crash Recovery Model from Section 5.1.
 
 #### 5.2.2 Lock-Evidence  Flow
-This phase of ODAP follows the Crash Recovery Model from Section 5.1.
+This phase of SATP follows the Crash Recovery Model from Section 5.1.
 Note that, in this phase, distributed ledgers were changed by gateways. The crash gateways' recovery should take place in less than the timeout specified for the asset transfer. Otherwise, the rollback protocol present in the next section is applied.
 
 #### 5.2.3 Commitment Establishment  Flow
-This phase of ODAP follows the Crash Recovery Model from Section 5.1 and extra steps because in the third phase, distributed gateways changed ledgers.
+This phase of SATP follows the Crash Recovery Model from Section 5.1 and extra steps because in the third phase, distributed gateways changed ledgers.
 
 As transactions cannot be undone on blockchains, reverting a transaction includes issuing new transactions (with the contrary effect of the ones to be reverted). We use a rollback list [HERMES] to keep track of which transaction may be rolled back.
 The crash recovery protocol for the Commitment Establishment Flow is as follows (steps according to Figure 4 [HERMES]):
 
 1. Rollback lists for all the gateways involved are initialized.
 
-2. On step 2.3, add a pre-lock transaction to the source gateway rollback list.
+2. On step 2.3, add a pre-lock transaction to the origin Gateway rollback list.
 
-3. On step 3.2, if the request is denied, abort the transaction and apply rollbacks on the source gateway.
+3. On step 3.2, if the request is denied, abort the transaction and apply rollbacks on the origin Gateway.
 
-4. On step 3.3, add a lock transaction to the source gateway rollback list.
+4. On step 3.3, add a lock transaction to the origin Gateway rollback list.
 
-5. On step 3.4, if the commit fails, abort the transaction and apply rollbacks on the source gateway.
+5. On step 3.4, if the commit fails, abort the transaction and apply rollbacks on the origin Gateway.
 
-5. On step 3.5,  add a create asset transaction to the rollback list of the recipient gateway.
+5. On step 3.5,  add a create asset transaction to the rollback list of the destination Gateway.
 
-7. On step 3.8, if the commit is successful, ODAP terminates.
+7. On step 3.8, if the commit is successful, SATP terminates.
 
 8: Otherwise, if the last commit is unsuccessful, then abort the transaction and apply rollbacks to both gateways.
 
 
-### 5.3 ODAP-2PC Messages
-ODAP-2PC messages are used to recover from crashes at the several ODAP phases.
-These messages inform gateways of the current state of a recovery procedure.
-ODAP-2PC messages follow the log format from Section 4.
+### 5.3 Recovery Messages
+Recovery messages are used to recover from crashes at the several SATP phases.
+These messages inform gateways of the current state of a recovery procedure, and follow the log format from Section 4.
 
 #### 5.3.1 RECOVER
 A RECOVER message is sent from the crashed gateway to the counterparty gateway, sending its most recent state.
-This message type is encoded on the recovery message field of an ODAP log.
+This message type is encoded on the recovery message field of an SATP log.
 
 The parameters of the recovery message payload consist of the following:
 
-* ODAP phase: latest ODAP phase registered.
+* SATP phase: latest SATP phase registered.
 
 * Sequence number: latest sequence number registered.
 
@@ -463,7 +443,7 @@ The parameters of this message consist of the following:
 
 
 #### 5.3.5. ROLLBACK
-A rollback message is sent by a gateway that initiates a rollback as defined by ODAP-2PC.
+A rollback message is sent by a gateway that initiates a rollback.
 
 The parameters of this message consist of the following:
 
@@ -471,7 +451,7 @@ The parameters of this message consist of the following:
 
 * actions performed: actions performed to roll back a state (e.g., UNLOCK; BURN).
 
-* proofs: a lock-evidence proof specific to the DLT [ODAP]
+* proofs: a lock-evidence proof specific to the DLT [SATP]
 
 
 
@@ -487,9 +467,9 @@ The parameters of this message consist of the following:
 ### 5.4 Examples 
 
 There are several situations when a crash may occur.
-#### 5.4.1 Crashing before issuing a command to the counter-party gateway
+#### 5.4.1 Crashing before issuing a command to the counterparty gateway
 
-The following figure represents the source gateway (G1) crashing before it issued an init command to the recipient gateway (G2). 
+The following figure represents the origin Gateway (G1) crashing before it issued an init command to the destination Gateway (G2). 
 
      ┌──┐                           ┌──┐             ┌───────┐
      │G1│                           │G2│             │Log API│
@@ -535,7 +515,7 @@ The following figure represents the source gateway (G1) crashing before it issue
      └──┘                           └──┘             └───────┘
 
 
-#### 5.4.2 Crashing after issuing a command to the counter-party gateway
+#### 5.4.2 Crashing after issuing a command to the counterparty gateway
 
 The second scenario requires further synchronization (figure below). At the retrieval of the latest log entry, G1 notices its log is outdated. It updates it upon necessary validation and then communicates its recovery to G2. The process then continues as defined.
 
@@ -616,12 +596,15 @@ Log entries need integrity, availability, and confidentiality guarantees, as the
 
 For extra guarantees, the nodes running the log storage API (or the gateway nodes themselves) can be protected by hardening technologies such as Intel SGX [CD16].
 
+## 7. Performance Considerations
+After the session setup using asymmetric-cryptography, the authenticated messages in the TLS Record Protocol utilize symmetric-key operations (using the session key). Since symmetric-key
+operations are much faster than public-key operations, a persistent TLS connection delivers performance suitable for quickly exchange of log entries across gateways. Upon a crash, gateways might employ their best effort for resuming the crashed session.
 
-## 7. References
+## 8. References
 
 [Arch] https://datatracker.ietf.org/doc/draft-hardjono-blockchain-interop-arch/
 
-[ODAP] https://datatracker.ietf.org/doc/draft-hargreaves-odap/
+[SATP] https://datatracker.ietf.org/doc/draft-hargreaves-sat-core/
 
 [BHG87] Bernstein, Philip A.; Hadzilacos, Vassos; Goodman, Nathan (1987). “Concurrency Control and Recovery in Database Systems,” Chapter 7. Addison Wesley Publishing Company.
 
@@ -636,3 +619,5 @@ For extra guarantees, the nodes running the log storage API (or the gateway node
 [OIDC] Sakimura, N., Bradley, J., Jones, M., de Medeiros, B., and C. Mortimore, "OpenID Connect Core 1.0", November 2014, <http://openid.net/specs/openid-connect-core-1_0.html>.
 
 [HERMES] Belchior, R., Vasconcelos, A., Correia, M., Hardjono, T. (2021). TechRxiv 14120291
+
+[VOC] https://github.com/CxSci/IETF-SATP/blob/main/vocabulary/vocabulary.md
