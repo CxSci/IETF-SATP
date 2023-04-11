@@ -1317,6 +1317,7 @@
 			<t>client_signature REQUIRED. The digital signature of the client. </t>
 
 			</list></t>
+			<t>Example:</t>
 
 			<figure align="center" anchor="lock-assert-message-sec">
 				<artwork><![CDATA[                                         
@@ -1383,6 +1384,7 @@
 			<t>server_signature REQUIRED. The digital signature of the server. </t>
 
 			</list></t>
+			<t>Example:</t>
 
 			<figure align="center" anchor="lock-assert-message-sec-resp">
 				<artwork><![CDATA[                                         
@@ -1480,6 +1482,32 @@
 			<t>client_signature REQUIRED. The digital signature of the client.</t>
 
 			</list></t>
+			<t>Example:</t>
+
+			<figure align="center" anchor="commit-preparation-message">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /commit-preparation HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+		
+			{
+				"message_type": "urn:ietf:satp:msgtype:commit-prepare-msg",
+				"session_id": "0a870f2a-9120-42b2-9d9a-97d7ce76f8e8",
+				"client_identity_pubkey": "0x049c8e24bf7d8139d15a6e785c4df4a4a4ce4e18f37be22c5728e654b583c70d9351d5077baf6f5de5fc5e6e3a3a2880b55a9688d3611d0f928818c4e4a8514d4",
+				"server_identity_pubkey": "0x048b15f0d9c2e580d3c3305f5d5f16d5a16169f09f7e0e28464b26a3d3e074b04a7b84e3100d7e2b1d97379910e54e1f9e277717f9a309c87aa06f8a8b7471d26",
+				"hash_prev_message": "e8f9f568c17aef67e283c7b55f82f068d556dc0ef82b773ce7ba0da49f9c0fb3",
+				"client_transfer_number": 123456,
+				"client_signature": "0x040f49b53e8d9c9fb2d1dcf5c5ba5d6e5d3f3a6a99f6b8e9d73e6a82b506f42b0c7b15f9f65c423d01ba40b4c0b557de19386d29d5ba1704c4dc4d739e01b1df4"
+			  }
+			  
+			  
+			
+				]]></artwork>
+				  </figure>
+		
 
 		</section>
    		<!-- END SUBSECTION -->
@@ -1518,6 +1546,30 @@
 			<t>server_signature REQUIRED. The digital signature of the server.</t>
 
 			</list></t>
+			<t>Example:</t>
+			
+			<figure align="center" anchor="commit-preparation-ack">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /commit-preparation HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+		
+			{
+				"message_type": "urn:ietf:satp:msgtype:commit-prepare-ack",
+				"session_id": "2a2f58e0-3e3b-11ec-8d3d-0242ac130003",
+				"client_identity_pubkey": "c25a43a415e36182ab78c17aaf148c52d5ee2dd5c1ac9db1a06dfc2565b5e5f5",
+				"server_identity_pubkey": "ae16f0a9c4509b2d2c1f3ca3e3e5228c2e2af58b7a3a3a18130153faffd90483",
+				"hash_prev_message": "f23cf19b77f6c4d4a4d6c9f9d0eb22e3257a2a2a1f7d227d634237a57a68a9a9",
+				"server_transfer_number": 123456,
+				"server_signature": "304402206eeb026d00725d5b9c9a5de51cbe1d2d2f96b8ebca05e3f0a6c7122f3c8f3bc02201e68ef0b28a6f23a44e0edf4d7c4aa1d37e7cbbad4ec67c7f47f39185753f7d2"
+			}
+
+				]]></artwork>
+				  </figure>
+		
 
 		</section>
    		<!-- END SUBSECTION -->
@@ -1563,6 +1615,37 @@
 			<t>server_signature REQUIRED. The digital signature of the server.</t>
 
 			</list></t>
+			<t>Example:</t>
+			
+			<figure align="center" anchor="commit-ready">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /commit-ready HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+			{
+				"message_type": "urn:ietf:satp:msgtype:commit-ready-msg",
+				"session_id": "05e45a0b-23e2-4bdc-a06a-7cc2bb06d46b",
+				"client_identity_pubkey": "047b0a72e30c4ef54e4b4a854b4aa3b9479c2f01f452e7e8b1213a3c1d2f24db",
+				"server_identity_pubkey": "043e05eb5cf5b599f8b1d38f7c33d27e045df7ab8f909d0b7e58f973e12f5841a2",
+				"mint_assertion_claims": {
+					"asset_id": "23fe5548-8318-4c11-9bc9-c2b50e3e3d98",
+					"amount": 1000,
+					"currency": "USD",
+					"expiration": "2024-04-11T12:00:00Z"
+				},
+				"mint_assertion_format": "JWT",
+				"hash_prev_message": "5b20751c57c93810c2a1eb7c1026bdfed3095518f6c90f6c069d5edbe51c57f8",
+				"server_transfer_number": 12345,
+				"server_signature": "MEYCIQC6PnmvL5ZamW8ZzSn5IyoV0r2QShzwbiYq3oKmH9XGXQIhALcOpWq3TxHwLJnSxNAYdGGEr70FCXy7CYUM+FYAgOt"
+			}
+			
+
+				]]></artwork>
+				  </figure>
+		
 
 		</section>
    		<!-- END SUBSECTION -->
@@ -1613,6 +1696,31 @@
 			<t>client_signature REQUIRED. The digital signature of the client.</t>
 
 			</list></t>
+			<t>Example:</t>
+			
+			<figure align="center" anchor="commit-final">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /commit-final HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+			{
+				"message_type": "urn:ietf:satp:msgtype:commit-final-msg",
+				"session_id": "369485e0-7c1e-11eb-9439-0242ac130002",
+				"client_identity_pubkey": "0x7a6c0b28a7b6c727d6d10fb6abbe8704c12f6ad9",
+				"server_identity_pubkey": "0x49f0d1bdeef38b1e51b2a366e02a9a46390df3d6",
+				"burn_assertion_claims": "0x3558437622216ccd682d0ed1cc0fed67745a7a5974d6f5924041007e5556a865",
+				"burn_assertion_format": "txhash",
+				"hash_prev_message": "f02c30c7-d728-4bc4-9d4e-ee4f0e775d38",
+				"client_transfer_number": 123456,
+				"client_signature": "0xabcd1234"
+			}
+			
+
+				]]></artwork>
+				  </figure>
 
 		</section>
    		<!-- END SUBSECTION -->
@@ -1655,6 +1763,36 @@
 			<t>server_signature REQUIRED. The digital signature of the server.</t>
 
 			</list></t>
+			<t>Example:</t>
+			
+			<figure align="center" anchor="ack-commit-final">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /commit-final HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+			{
+				"message_type": "urn:ietf:satp:msgtype:ack-commit-final-msg",
+				"session_id": "c011ab1e-1337-1337-1337-2468aceface0",
+				"client_identity_pubkey": "0x04a3d344f3c3b56e672aa9540a7df0f6b2d6fb90a6a401c03db36d6b9a9bfe5ab5aa2ce5e2354ee4fc042fb4ad0b188aef15393d70cb1ce8e037bc0a225c04db2",
+				"server_identity_pubkey": "0x04f547a1a31a2672b9f8936e22e16a51cb3b3ec8aafcd443bc1c7db38d1b292bf9e21b15987797c9900f534e1403f3ccba3a3c0e7d541b41c1a8a516a56c20001",
+				"assignment_assertion_claims": {
+				  "asset_id": "abc123",
+				  "beneficiary": "0x6789abc...",
+				  "assigned_by": "0x1234def..."
+				},
+				"assignment_assertion_format": "json",
+				"hash_prev_message": "0x7e1b929f78b6f65e12c72db6b176d9d9f9a6a9445b5ab9254e4d4de4b725ba06",
+				"server_transfer_number": 1234,
+				"server_signature": "0x2f2dbfe1428b5e5de27a28b3a5e5e8c80f02502c91f14e579f79868f8c09e55644916d7e5f1b0e8b21d165b2a89d9a9c1ca95f1aef126d54b38d0c501f9650501"
+			  }
+			  
+			
+
+				]]></artwork>
+				  </figure>
 
 		</section>
    		<!-- END SUBSECTION -->
@@ -1698,6 +1836,31 @@
 			<t>client_signature REQUIRED. The digital signature of the client.</t>
 
 			</list></t>
+			<t>Example:</t>
+			
+			<figure align="center" anchor="transfer-complete">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /transfer-complete HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+			{
+				"message_type": "urn:ietf:satp:msgtype:commit-transfer-complete-msg",
+				"session_id": "9a7c558f-03d8-43f1-9e18-87573a824c72",
+				"client_identity_pubkey": "0x3a3c1a8f082d56a87c482f1ab71f50c92aebd86d",
+				"server_identity_pubkey": "0x2910e09dbf7a1cc48dc99d7e390f86d9ac7a28c9",
+				"hash_prev_message": "a1e7b73a-59d6-4f38-a689-4b4d4b4d4b4d",
+				"hash_transfer_commence": "f90d6f10-87d5-4c5f-b262-83c8a2aa0f64",
+				"client_transfer_number": "12345",
+				"client_signature": "0x9c7b3df0fb22c8fa37cc48e10f7c413bb84d2d7e32c37d9ac7c1d221b35cb7d1"
+			  }
+			  
+			
+
+				]]></artwork>
+				  </figure>
 
 		</section>
    		<!-- END SUBSECTION -->
@@ -1710,7 +1873,11 @@
 
 
 
-
+   	<section anchor="Error-Codes" title="Error Codes">
+		<t>Errors have the following format:</t>
+		
+		TBD
+	</section>
 
 
    	<!-- START SECTION -->
