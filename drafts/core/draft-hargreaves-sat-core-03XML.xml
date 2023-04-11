@@ -961,7 +961,44 @@
 				
 				<t>Example:</t>
 
-				
+
+				<figure align="center" anchor="initialization-request-example">
+					<artwork><![CDATA[                                         
+					
+			   POST /initialization-request HTTP/1.1
+				 Host: server.example.com
+				 Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+				 Content-Type: application/x-www-form-urlencoded
+			
+					 {
+					 "version": "1.0",
+					 "message_type": "urn:ietf:satp:msgtype:initialization-request-msg",
+					 "session_id":"3c7e8d28-15e7-11ec-82a8-0242ac130003",
+					 "developer_urn":"com.example.app",
+					 "credential_profile":"X.509",
+					 "payload_profile":"asset_profile 3c7e8d28",
+					 "application_profile":"vendor_profile 3c7e8d23",
+					 "logging_profile":"local_store",
+					 "access_control_profile":"gateway_only",
+					 "initialization_request_message_signature":"30440220452242b3d148b5ca6b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1d",
+					 "sender_gateway_pubkey":"MCowBQYDK2VwAyEA1UKvRcYgSP0UJxTcMOMT+TQZJ0At+a34S9XrtJj+Lo0=",
+					 "sender_gateway_network_id":"12345",
+					 "recipient_gateway_pubkey":"MCowBQYDK2VwAyEAbCFL39i/9XNpW1+tpaAYFwexHRSANxhUJZ1UoeZ6lHs=",
+					 "recipient_gateway_network_id":"54321",
+					 "lock_type": "timelock",
+					 "lock_expiration_type": "3600",
+					 "multiple_claims": "true",
+					 "multiple_cancels": "true",
+					 "permissions": [  "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE3MwIUR5r5r7BRXzZStuL7V46ODhJ",  "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE3MwIUR5r5r7BRXzZ"]",
+					 "originator": "Org1MSP",
+					 "beneficiary": "0x20790e28316C429a2c0411e7F14Caf6B053a77Ae",
+					 "subsequent_calls": "none",
+					 "history": "none",
+					 }
+			
+					]]></artwork>
+					  </figure>
+							
 
 
 			</section>
@@ -1020,41 +1057,25 @@
 				when the Initialization Response Message was constructed. </t> 
 				</list></t>
 				
-				<t>Example: TBD.</t>
+				<t>Example:</t>
 
-		<figure align="center" anchor="initialization-request-example">
+		<figure align="center" anchor="initialization-request-response-example">
 		<artwork><![CDATA[                                         
         
-   POST /token HTTP/1.1
+   POST /initialization-request HTTP/1.1
      Host: server.example.com
      Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
      Content-Type: application/x-www-form-urlencoded
-
-         {
-		 "version": "1.0",
-         "message_type": "urn:ietf:satp:msgtype:initialization-request-msg",
-         "session_id":"3c7e8d28-15e7-11ec-82a8-0242ac130003",
-		 "developer_urn":"com.example.app",
-		 "credential_profile":"X.509",
-		 "payload_profile":"asset_profile 3c7e8d28",
-		 "application_profile":"vendor_profile 3c7e8d23",
-		 "logging_profile":"local_store",
-		 "access_control_profile":"gateway_only",
-		 "initialization_request_message_signature":"30440220452242b3d148b5ca6b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1d",
-		 "sender_gateway_pubkey":"MCowBQYDK2VwAyEA1UKvRcYgSP0UJxTcMOMT+TQZJ0At+a34S9XrtJj+Lo0=",
-		 "sender_gateway_network_id":"12345",
-		 "recipient_gateway_pubkey":"MCowBQYDK2VwAyEAbCFL39i/9XNpW1+tpaAYFwexHRSANxhUJZ1UoeZ6lHs=",
-		 "recipient_gateway_network_id":"54321",
-		 "lock_type": "timelock",
-		 "lock_expiration_type": "3600",
-		 "multiple_claims": "true",
-		 "multiple_cancels": "true",
-		 "permissions": [  "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE3MwIUR5r5r7BRXzZStuL7V46ODhJ",  "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE3MwIUR5r5r7BRXzZ"]",
-		 "originator": "Org1MSP",
-		 "beneficiary": "0x20790e28316C429a2c0411e7F14Caf6B053a77Ae",
-		 "subsequent_calls": "none",
-		 "history": "none",
-         }
+	 {
+		"message_type": "urn:ietf:satp:msgtype:initialization-request-response-msg",
+		"session_id": "3c7e8d28-15e7-11ec-82a8-0242ac130003",
+		"sequence_number": 1,
+		"hash_initialization_request_message": "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12",
+		"destination": "0x20790e28316C429a2c0411e7F14Caf6B053a77Ae",
+		"timestamp": "2023-04-11T10:00:00Z",
+		"processed_timestamp": "2023-04-11T10:01:30Z"
+	  }
+	  
 
 		]]></artwork>
       	</figure>
@@ -1153,26 +1174,27 @@
 		<figure align="center" anchor="transfer-commence-sec-example">
 		<artwork><![CDATA[                                         
         
-   POST /token HTTP/1.1
+   POST /transfer-commence HTTP/1.1
      Host: server.example.com
      Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
      Content-Type: application/x-www-form-urlencoded
 
-         {
-         "message_type": "urn:ietf:satp:msgtype:transfer-commence-msg",
-         "session_id":"9097hkstgkjvVbNH",
-         "originator_pubkey":"zGy89097hkbfgkjvVbNH",
-         "beneficiary_pubkey": "mBGHJjjuijh67yghb",
-         "sender_net_system": "originNETsystem",
-         "recipient_net_system":"recipientNETsystem",
-         "client_identity_pubkey":"fgH654tgeryuryuy",
-         "server_identity_pubkey":"dFgdfgdfgt43tetr535teyrfge4t54334",
-         "hash_asset_profile":"nbvcwertyhgfdsertyhgf2h3v4bd3v21",
-         "asset_unit": "ghytredcfvbhfr",
-         "hash_prev_message":"DRvfrb654vgreDerverv654nhRbvder4",
-         "client_transfer_number":"ji9876543ewdfgh",
-         "client_signature":"fdw34567uyhgfer45"
-         }
+	 {
+		"version": "1.0",
+		"message_type": "urn:ietf:satp:msgtype:transfer-commence-msg",
+		"session_id": "3c7e8d28-15e7-11ec-82a8-0242ac130003",
+		"originator_pubkey": "MCowBQYDK2VwAyEA1UKvRcYgSP0UJxTcMOMT+TQZJ0At+a34S9XrtJj+Lo0=",
+		"beneficiary_pubkey": "MCowBQYDK2VwAyEAbCFL39i/9XNpW1+tpaAYFwexHRSANxhUJZ1UoeZ6lHs=",
+		"sender_gateway_network_id": "12345",
+		"recipient_gateway_network_id": "54321",
+		"client_identity_pubkey": "MCowBQYDK2VwAyEAj8TqWNNgaXnJpCBHKNj40I1fWcA0yw2P25NtPdYvT0Y=",
+		"server_identity_pubkey": "MCowBQYDK2VwAyEAm/oHmEYk2C8W/Bmkpk9X1HLCJS7VNWQ6g5B5V5Unesw=",
+		"hash_asset_profile": "c6fb9ac0f399c9df179c6e7f97bfa2a84a8df75e2d0264969fbe7a1a2dadda7b",
+		"asset_unit": 100,
+		"hash_prev_message": "d45e9e4087b07c67ccdd00e13dbf33d4780387c84f22e75f426d1e2a9a9f72c9",
+		"client_transfer_number": 1234,
+		"client_signature": "304502206bda794d1789ad7cdd59c4e4d0fb38e184f3af3eb2b6ee943348e98d99b9ad5022100c91eaf8f20b4d87b5583f6e2f6e05d6af20d6c5c6f93d6cb5c5fa5b90fcb12c"
+		}
 
 		]]></artwork>
       	</figure>
@@ -1220,22 +1242,23 @@
 		<figure align="center" anchor="transfer-commence-resp-sec-example">
 		<artwork><![CDATA[                                         
 
-```
-     HTTP/1.1 200 OK
-     Content-Type: application/json;charset=UTF-8
-     Cache-Control: no-store
-     Pragma: no-cache
 
-     {
-       "message_type":"urn:ietf:satp:msgtype:ack-commence-msg",
-       "session_id":"9097hkbfgkjvVbNH",
-       "client_identity_pubkey":"fgH654tgeryuryuy",
-       "server_identity_pubkey":"dFgdfgdfgt43tetr535teyrfge4t54334",
-       "hash_prev_message":"DRvfrb654vgreDerverv654nhRbvder4",
-       "server_transfer_number":"ji9876543ewdfgh",
-       "server_signature":"aaw34567uyhgfer66"
-     }
-```
+	POST /transfer-commence-sec HTTP/1.1
+	Host: server.example.com
+	Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+	Content-Type: application/x-www-form-urlencoded
+
+	 {
+		"message_type": "urn:ietf:satp:msgtype:ack-transfer-commence-msg",
+		"session_id": "b45a784d-5f61-4b46-a5d3-5e5dc9e4638a",
+		"client_identity_pubkey": "0x5a83f392c43d2ebd57cf2b9a12a8bf7fbcf2a266",
+		"server_identity_pubkey": "0x4c4d4f62a84cb304a34b7c3be447fa3a7de65014",
+		"hash_prev_message": "0x7c26738e9f6ba2c6dc5203d3d7647a32a19095e6b98f6d301d6ab9ac6ebc8a10",
+		"server_transfer_number": 123456,
+		"server_signature": "0x4d4a4e04a76f8c7a58d12fc17fb0fc0b11dc8b7e74d524a0e2a9f962bd8c7d1b"
+	}
+	
+
 		]]></artwork>
       	</figure>
 
@@ -1295,6 +1318,36 @@
 
 			</list></t>
 
+			<figure align="center" anchor="lock-assert-message-sec">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /lock-assert-sec HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+		
+			{
+				"message_type": "urn:ietf:satp:msgtype:lock-assert-msg",
+				"session_id": "f99636a9-9f3b-4f46-aa2e-2d3c7b277f19",
+				"client_identity_pubkey": "sha256:abc123",
+				"server_identity_pubkey": "sha256:def456",
+				"lock_assertion_claims": {
+					"asset_id": "1234567890",
+					"lock_type": "exclusive",
+					"locked_by": "Alice"
+				},
+				"lock_assertion_format": "JWT",
+				"lock_assertion_expiration": "PT1H",
+				"hash_prev_message": "sha256:fedcba9876543210",
+				"client_transfer_number": 42,
+				"client_signature": "sha256:0123456789abcdef"
+			}
+			
+			
+				]]></artwork>
+				  </figure>
+		
 		
 		</section>
    		<!-- END SUBSECTION -->
@@ -1331,6 +1384,29 @@
 
 			</list></t>
 
+			<figure align="center" anchor="lock-assert-message-sec-resp">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /lock-assert-sec HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+		
+			{
+				"message_type": "urn:ietf:satp:msgtype:lock-assert-receipt-msg",
+				"session_id": "1925d5de-9361-4a5b-bfb5-31a1d496df13",
+				"client_identity_pubkey": "BwuQxKjbsgAKmt1/7v1JtxlCf55dP8oGzLZTkUwyI6U=",
+				"server_identity_pubkey": "89LH/cz2Q7LRRugThgXZTsiu0S6CPx7Vq8/kJP2cb7o=",
+				"hash_prev_message": "8d6ec9f178ef51d3a1b7f3fc3e2fc7a18e4d4ebd8c6f9ad7667d1f53dbbc6e09",
+				"server_transfer_number": 123456,
+				"server_signature": "ZThkNjk1ZjA2OTQ0MTA5MDM1ZTAwMjZhNmM5NTBkMzBjZGJlMzliZmM5MTkzODRmNjk0MTk5ZjJmZmNhN2Q0MA=="
+			  }
+			  
+			
+				]]></artwork>
+				  </figure>
+		
 		</section>
    		<!-- END SUBSECTION -->
 
