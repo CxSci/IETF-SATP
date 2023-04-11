@@ -1873,11 +1873,38 @@
 
 
 
-   	<section anchor="Error-Codes" title="Error Codes">
-		<t>Errors have the following format:</t>
-		
-		TBD
-	</section>
+   	<section anchor="Errors" title="Errors">
+		<t> Error messages can be returned at every phase and message in SATP (not to be confused with the logging procedure the crash recovery mechanism specifies).
+			Errors have the following schema:</t>
+		<t><list style="symbols">
+			<t>error_type REQUIRED. The error type.</t>
+			<t>error_code REQUIRED. The error code.</t>
+			<t>error_message REQUIRED. The error message.</t>
+			<t>error_proprietary OPTIONAL. The error details.</t>
+			
+			</list></t>
+		<t>TBD</t>
+
+		<section anchor="Error-Types" title="Error Types">
+			<t>TBD</t>
+
+			</section>
+
+		<section anchor="Error-Codes" title="Error Codes">
+			<t>TBD</t>
+
+			</section>
+
+		<section anchor="Error-Messages" title="Error Messages">
+			<t>TBD</t>
+
+			</section>
+
+		<section anchor="Error-Proprietary" title="Error Proprietary">
+			<t>TBD</t>
+
+			</section>
+		</section>
 
 
    	<!-- START SECTION -->
