@@ -600,6 +600,11 @@ For extra guarantees, the nodes running the log storage API (or the gateway node
 After the session setup using asymmetric-cryptography, the authenticated messages in the TLS Record Protocol utilize symmetric-key operations (using the session key). Since symmetric-key
 operations are much faster than public-key operations, a persistent TLS connection delivers performance suitable for quickly exchange of log entries across gateways. Upon a crash, gateways might employ their best effort for resuming the crashed session.
 
+## 8. Assumptions 
+For the protocol to work correctly, a few assumptions are taken:
+1. the crashed gateways eventually recover, at most for a fixed time (or are replaced).
+2. Calls to the log API do not fail.
+
 ## 8. References
 
 [Arch] https://datatracker.ietf.org/doc/draft-hardjono-blockchain-interop-arch/
