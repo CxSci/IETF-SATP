@@ -1,0 +1,20 @@
+@startuml
+
+entity "Source Gateway GS" as sg
+entity "Recipient Gateway GR" as rg
+entity "Log Storage API" as log
+
+
+sg->log: 1: [1]: writeLogEntry <p1, 1, init-validate, (GS->GR)>
+
+
+sg->sg: <color:red><&warning> Crash <&warning>\n ... \n<color:green>recover
+
+sg->log: [2] getLog(log)
+sg->sg: [3] calculate next step
+sg->rg:[4] <color:green> send rm
+return [5] <color:green>confirm rm
+sg->rg: [6]: initiate asset transfer
+
+
+@enduml

@@ -1,0 +1,24 @@
+@startuml
+
+entity "Node" as sg
+entity "Node 2" as n2
+entity "Log Storage API" as api
+entity "Log" as log
+
+sg-> api: [1] <Process A, 1, init-initNode, Node>
+api->log: [2] writeLogEntry<...>
+sg->sg: [3] initializes node
+
+sg-> api: [4] <Process A, 2, init-initAllNodes, (Node -> Node2)>
+api->log: [5] writeLogEntry<...>
+sg->n2: [6] <Process A, 2, init-initAllNodes, (Node -> Node2)>
+
+n2-> api: [7] <Process A, 2, ack-initAllNodes, (Node2)>
+api->log: [8] writeLogEntry<...>
+n2->n2: [9] init
+n2-> api: [10] <Process A, 2, success-initAllNodes, (Node2 -> Node)>
+api->log: [11] writeLogEntry<...>
+
+n2->sg: [12] <Process A,3, success-initAllNodes, (Node2 -> Node)>
+
+@enduml

@@ -1,0 +1,21 @@
+@startuml
+
+entity "Source Gateway G1" as sg
+entity "Recipient Gateway G2" as rg
+entity "Log Storage API" as log
+
+
+sg->log: 1: log(init,n,k,G2)
+sg->rg: init(n,k)
+
+sg->sg: <color:red><&warning> Crash <&warning>\n
+    rg->log: received (n,k)
+        rg->rg: exec (n,k)
+        rg->log: log(complete,n,k)
+sg->sg: <color:green>recover
+
+sg->log: obtain lastEntry(log)
+sg->rg:<color:green>send rm
+return current state
+
+@enduml

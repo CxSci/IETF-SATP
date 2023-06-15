@@ -1,0 +1,19 @@
+@startuml
+
+entity "G1" as sg
+entity "G2" as rg
+entity "Log API" as log
+
+
+sg->log: [1]: writeLogEntry <1,1,init-validate>
+
+
+sg->rg: initiate ODAP's phase 1
+    rg->log: [2]: writeLogEntry <1,2,exec-validate>
+        rg->rg: execute validate from p1
+        rg->log: [3]: writeLogEntry <1,3,done-validate>
+        rg->log: [4]: writeLogEntry <1,4,ack-validate>
+        rg->sg: validation complete
+
+
+@enduml

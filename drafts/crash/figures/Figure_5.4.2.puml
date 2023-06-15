@@ -1,0 +1,35 @@
+@startuml
+
+entity "G1" as sg
+entity "G2" as rg
+entity "Log API" as log
+
+
+sg->log: [1]: writeLogEntry <1,1,init-validate>
+
+sg->rg: [2]: <1,1,init-validate>
+
+
+sg->sg: [3] Crash
+
+      rg->log: [4]: writeLogEntry <exec-validate>
+          rg->rg: [5]: execute init
+          rg->log: [6]: writeLogEntry <done-init>
+          rg->log: [7]: writeLogEntry <ack-init>
+rg->sg: [8] <1,2,init-validate-ack> \n discovers that G1 crashed \n via timeout
+sg->sg: [9] Recover
+sg->rg: [10] <1, 2, RECOVER>
+
+    rg->log: [11] getLogEntry(i)
+        return [12] logEntries
+    rg->sg: [13] <1,3,RECOVER-UPDATE>
+
+sg->sg: [14] process log
+sg->log: [15] <1,4,writeLogEntry>
+
+sg->rg: [16] <1,5,RECOVER-UPDATE-ACK>
+rg -> sg: [17] <1,6,RECOVER-SUCESS>
+sg->log: [18]: <1,7,init-validateNext>
+
+
+@enduml
