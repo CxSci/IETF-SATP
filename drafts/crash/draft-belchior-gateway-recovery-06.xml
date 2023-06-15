@@ -266,7 +266,7 @@ From these primitives, other functions can be built:
 <t>
 Example 3.1 shows a simplified version log referring to the transfer initiation flow SATP phase. Each log entry
 (simplified, see the definition in Section 3) is composed of metadata (phase, sequence number) and one attribute from the payload (operation).
-Operations map behavior to state (see Section 3).
+Operations map behavior to state (see Section 4).
 </t>
 		
 
@@ -343,6 +343,14 @@ Without loss of generality, the above logging model applies to all phases of SAT
 </t>
 
 </section>
+
+<section anchor="fig3.2-concrete" title="Concrete example">
+
+<t>This example showcases the logging procedure step 2.4 of SATP (lock-assertion) by both gateways.</t>
+
+<t>(TBD insert figure 3.2)</t>
+</section>
+
 <section anchor="lst" title="Log Storage Modes">
 
 <t>
@@ -613,22 +621,33 @@ Example of a log entry created by G1, corresponding to locking an asset (phase 2
 
 	<artwork><![CDATA[ 
 		
+
 {
-"sessionId": "4eb424c8-aead-4e9e-a321-a160ac3909ac",
-"seqNumber": 6,
-"phaseId": "lock",
-"originGatewayId": "5.47.165.186",
-"originDltId": "Hyperledger-Fabric-JusticeChain",
-"destinationGatewayId": "192.47.113.116",
-"destinationDltId": "Ethereum",
-"timestamp": "1606157330",
-"payload": {
-"messageType": "2pc-log",
-"message": "LOCK_ASSET",
-"votes": "none"
-},
-"payloadHash": "80BCF1C7421E98B097264D1C6F1A514576D6C9F4EF04955FA3AEF1C0664B34E3",
-"logEntryHash": "[...]"
+  "Version": "1.0",
+  "Session ID": "123e4567-e89b-12d3-a456-426655440000",
+  "Sequence Number": 1,
+  "SATP Phase": "Initialization",
+  "Resource URL": "http://myresource.com",
+  "Developer URN": "urn:myapp:developerid",
+  "Action/Response": "POST /myresource",
+  "Credential Profile": "OAuth",
+  "Credential Block": "ABC123TOKEN",
+  "Payload Profile": "ProvenanceProfile1",
+  "Application Profile": "AppProfile1",
+  "Payload": "{ 'key1': 'value1', 'key2': 'value2' }",
+  "Payload Hash": "abc123def456",
+  "timestamp": 1646176142,
+  "origin_gateway_pubkey": "abc123",
+  "origin_gateway_dlt_system": "DLT1",
+  "destination_gateway_pubkey": "def456",
+  "destination_gateway_dlt_system": "DLT2",
+  "logging_profile": "Local Store",
+  "Message_signature": "edcsa_signature_here",
+  "Last_entry_hash": "hash_of_last_entry",
+  "Access_control_profile": "GatewayOnly",
+  "Operation": "init",
+  "recovery message": "recovery_message_here",
+  "recovery payload": "recovery_payload_here"
 }
 
 	]]></artwork>
@@ -669,7 +688,7 @@ Example of a log entry created by G1, corresponding to locking an asset (phase 2
 	<section anchor="SATP-2pc" title="Crash Recovery Procedure">
 
 	<t>
-This section defines general considerations about crash recovery.
+This section defines general considerations about crash recovery for the self-healing mode. Note that the procedure for the primary-backup mode is the same, but first has a session resumption process.
 
 
 	</t>
@@ -1300,7 +1319,31 @@ This message type is encoded on the recovery message field of an SATP log.
         </section>
       </section>
 	</section>
+	
+	<section anchor="session-resumption" title="Session Resumption">
+	<t>This section explains how the primary-backup mode works for crash recovery. First, there is a session resumption phase. After that, the gateways perform the protocol specified in Section 5.</t>
+	
+		<section anchor="gateway-replacement" title="Gateway Replacement">
+			<t>The gateway replacemenet protocol introduces an assumption. We assume every gateway has a valid X.509 certificate that was issued by its owner, which is the entity legally responsible for the gateway.</t> 
+			<t>Moreover, in the extensions field of the certificate, there is a list containing the hash of the authorized backup gateways.</t>
+			<t>When the primary gateway crashes, a replacement is bootstrapped with the latest version of the local state, and it engages in a protocol with the counterparty gateway.</t>
+			<t>This protocol aims to establish trust between gateways and the creation of a new TLS session:</t>
+		
+			<t><list style="decimal">
+				<t>
+				Validate the backup gateway certificate by running a certification path algorithm, which includes validating all the intermediate certificates up to a trusted root (can be the VASPs CA).
+				</t>
+				
+				<t>
+				The counterparty gateway verifies if the parent certificate of the crashed gateway and the backup gateway is the same (proving they belong to the same authority). 
+				</t>
 
+				<t>Verify if the backup gateway certificate hash belongs to the list specified in the crashed gateway certificate extensions.</t>
+			</list></t>
+
+			<t>The backup gateway, on its turn, defines gateways to replace it in case of a crash (X.509 certificate extensions).</t>
+		</section>
+	</section>
 	<section anchor="s" title="Security Considerations">
 	
 		<t>
