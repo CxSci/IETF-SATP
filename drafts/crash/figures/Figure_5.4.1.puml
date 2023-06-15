@@ -1,0 +1,27 @@
+@startuml
+
+entity "G1" as sg
+entity "G2" as rg
+entity "Log API" as log
+
+
+sg->log:  [1]: writeLogEntry <1, 1, init-validate>
+
+
+sg->sg: [2]  Crash \n ... \n[3]recover
+
+sg->rg: [4] <1, 2, RECOVER>
+
+    rg->log: [5] getLogEntry(i)
+        return [6] logEntries
+    rg->sg: [7] <1,3,RECOVER-UPDATE>
+
+sg->sg: [8] process log
+sg->log: [9] <1,4,writeLogEntry>
+
+sg->rg: [10] <1,5,RECOVER-UPDATE-ACK>
+rg -> sg: [11] <1,6,RECOVER-SUCESS>
+sg->log: [12]: <1,7,init-validateNext>
+
+
+@enduml

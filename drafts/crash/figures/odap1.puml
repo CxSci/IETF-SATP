@@ -1,0 +1,19 @@
+@startuml
+
+entity "Source Gateway G1" as sg
+entity "Recipient Gateway G2" as rg
+entity "Log Storage API" as log
+
+
+sg->log: 1: log (init,n,k,G2)
+
+
+sg->rg: 1. execute (n,k)
+    rg->log: received (n,k)
+        rg->rg: exec (n,k)
+        rg->log: log(complete,n,k)
+        rg->sg: (n,k) complete
+
+
+
+@enduml

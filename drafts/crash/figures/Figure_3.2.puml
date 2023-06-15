@@ -1,0 +1,28 @@
+@startuml
+
+entity "G1" as sg
+entity "G2" as rg
+entity "Log API G1" as log1
+entity "Log API G2" as log2
+entity "Public Log" as log3
+autonumber
+
+sg->log1: writeLogEntry <2,2.4,init-lock-assertion>
+
+
+sg->rg: initiate SATP's step 2.4
+    rg->log2: writeLogEntry <2,2.4,exec-validate>
+        rg->rg: execute validate from step 2.4
+        rg->log2: writeLogEntry <2,2.4,done-validate>
+        rg->log2: writeLogEntry <2,2.4,ack-validate>
+        rg->log2: writeLogEntry <2,2.5,init-log-assertion>
+        rg->log2: writeLogEntry <2,2.5,exec-log-assertion>
+        rg->log3: write lock assertion
+        rg->log2: writeLogEntry <2,2.5,done-log-assertion>
+        rg->rg: Create lock assertion ack
+        rg->log2: writeLogEntry <2,2.6,init-create-lock-ack>
+        rg->log2: writeLogEntry <2,2.6,exec-create-lock-ack>
+        rg->log2: writeLogEntry <2,2.6,done-create-lock-ack>
+rg->sg: send lock assertion ack
+
+@enduml
