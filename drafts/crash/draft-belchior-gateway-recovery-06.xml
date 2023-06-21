@@ -127,12 +127,12 @@ particularly important to guarantee asset consistency across networks.
 
 	<t>
 
-The crash recovering mechanism is applied to a version of SATP [HERMES] using either 2PC or 3PC, which are atomic commitment protocol (ACP).
+The crash recovering mechanism is applied to a version of SATP using either 2PC or 3PC, which are atomic commitment protocol (ACP).
 2PC and 3PC considers two roles: a coordinator who manages the protocol's execution and participants who manage the resources that must be kept consistent. The origin gateway plays the ACP role of Coordinator, and the destination Gateway plays the Participant role in relay mode. Gateways exchange messages corresponding to the protocol execution, generating log entries for each one.
 	</t>
 
 	<t>
-Log entries are organized into logs. Logs enable either the same or other backup gateways to resume any phase of SATP. This log can also serve as an accountability tool in case of disputes. Log entries are then the basis satisfying one of the key deployment requirements of gateways for asset transfers: a high degree of availability. In this document, we consider two common strategies to increase availability: (1) to support the recovery of the gateways (self-healing model) and (2) to employ backup gateways with the ability to resume a stalled transfer (primary-backup model) [HERMES].</t>
+Log entries are organized into logs. Logs enable either the same or other backup gateways to resume any phase of SATP. This log can also serve as an accountability tool in case of disputes. Log entries are then the basis satisfying one of the key deployment requirements of gateways for asset transfers: a high degree of availability. In this document, we consider two common strategies to increase availability: (1) to support the recovery of the gateways (self-healing model) and (2) to employ backup gateways with the ability to resume a stalled transfer (primary-backup model).</t>
 
 
 	<t>This memo proposes:
@@ -384,7 +384,7 @@ Without loss of generality, the above logging model applies to all phases of SAT
 		Nonetheless, this model delivers weaker integrity and availability guarantees.
 		</t>
 		<t>
-			rivate decentralized log. Each gateway stores logs in a private blockchain, and are shared with other gateways by default [BVC19]. 
+			rivate decentralized log. Each gateway stores logs in a private blockchain, and are shared with other gateways by default. 
 		</t>
 	</list>
 </t>
@@ -787,8 +787,8 @@ Note that, in this phase, distributed ledgers were changed by gateways. The cras
 			<t>
 			This phase of SATP follows the Crash Recovery Model from Section 6.1 and extra steps because in the third phase, distributed gateways changed ledgers.
 
-As transactions cannot be undone on blockchains, reverting a transaction includes issuing new transactions (with the contrary effect of the ones to be reverted). We use a rollback list [HERMES] to keep track of which transaction may be rolled back.
-The crash recovery protocol for the Commitment Establishment Flow is as follows (steps according to Figure 4 [HERMES]):
+As transactions cannot be undone on blockchains, reverting a transaction includes issuing new transactions (with the contrary effect of the ones to be reverted). We use a rollback list to keep track of which transaction may be rolled back.
+The crash recovery protocol for the Commitment Establishment Flow is as follows (steps according to Figure 4):
 
 
 			
@@ -1351,7 +1351,7 @@ This message type is encoded on the recovery message field of an SATP log.
 		We assume the storage service used provides the means necessary to assure the logs' confidentiality and integrity, stored and in transit. The service must provide an authentication and authorization scheme, e.g., based on OAuth and OIDC [OIDC], and use secure channels based on TLS/HTTPS [TLS].
 		The present protocol is crash fault-tolerant, meaning that it handles gateways that crash for several reasons (e.g., power outage). The present protocol does not support Byzantine faults, where gateways can behave arbitrarily (including being malicious). This implies that both gateways are considered trusted. We assume logs are not tampered with or lost.
 
-		Log entries need integrity, availability, and confidentiality guarantees, as they are an attractive point of attack [BVC19]. Every log entry contains a hash of its payload for guaranteeing integrity.  If extra guarantees are needed (e.g., non-repudiation),  a log entry might be signed by its creator. Availability is guaranteed by the usage of the log storage API that connects a gateway to a dependable storage (local, external, or decentralized). Each underlying storage provides different guarantees. Access control can be enforced via the access control profile that each log can have associated with, i.e., the profile can be resolved, indicating who can access the log entry in which condition. Access control profiles can be implemented with access control lists for simple authorization. The authentication of the entities accessing the logs is done at the Log Storage API level (e.g., username+password authentication in local storage vs. decentralized access control).
+		Log entries need integrity, availability, and confidentiality guarantees, as they are an attractive point of attack. Every log entry contains a hash of its payload for guaranteeing integrity.  If extra guarantees are needed (e.g., non-repudiation),  a log entry might be signed by its creator. Availability is guaranteed by the usage of the log storage API that connects a gateway to a dependable storage (local, external, or decentralized). Each underlying storage provides different guarantees. Access control can be enforced via the access control profile that each log can have associated with, i.e., the profile can be resolved, indicating who can access the log entry in which condition. Access control profiles can be implemented with access control lists for simple authorization. The authentication of the entities accessing the logs is done at the Log Storage API level (e.g., username+password authentication in local storage vs. decentralized access control).
 
 		For extra guarantees, the nodes running the log storage API (or the gateway nodes themselves) can be protected by hardening technologies such as Intel SGX [CD16].
 
@@ -1485,30 +1485,6 @@ This message type is encoded on the recovery message field of an SATP log.
 			<date day="" month="" year="1976"/>
 		</front>
 		</reference>	
-	
-	<reference anchor="BVC19" target="https://aisel.aisnet.org/ecis2020_rp/68/">
-		<front>
-			<title>Towards Secure, Decentralized, and Automatic Audits with Blockchain. European Conference on Information Systems</title>
-			<author initials="R." surname="Belchior">		</author>
-			<author initials="A." surname="Vasconcelos">			</author>
-			<author initials="M." surname="Correia">			</author>
-			<date day="" month="" year="2019"/>
-		</front>
-		</reference>	
-
-		
-	
-	<reference anchor="HERMES" target="https://www.techrxiv.org/articles/preprint/HERMES_Fault-Tolerant_Middleware_for_Blockchain_Interoperability/14120291">
-		<front>
-			<title>HERMES: Fault-Tolerant Middleware for Blockchain Interoperability</title>
-			<author initials="R." surname="Belchior">		</author>
-			<author initials="A." surname="Vasconcelos">			</author>
-			<author initials="M." surname="Correia">			</author>
-			<author initials="T." surname="Hardjono">			</author>
-			<date day="" month="" year="2021"/>
-		</front>
-		</reference>	
-
 
 	<reference anchor="OIDC" target="http://openid.net/specs/openid-connect-core-1_0.html">
 		<front>
