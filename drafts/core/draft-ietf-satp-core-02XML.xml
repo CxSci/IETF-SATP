@@ -1957,6 +1957,7 @@
 	<t>In some instances, gateways may crash. We employ either the primary-backup or self-healing paradigm, meaning that the crashed gateway will eventually be replaced by a functioning one, or recover, respectively.</t>
 	<t>When a crash occurs, we initiate a recovery procedure by the backup gateway or the recovered gateway, as defined in the crash recovery draft [draft-belchior-gateway-recovery-05]. In either case, if the recovery happens  within a time period defined as max_timeout (in Stage 2), the recovered gateway triggers a session resumption. The schema and order of the recovered messages is specified in the crash recovery draft.</t>
 	<t>In the case where there is no answer from the gateway within the specified max_timeout, the counter-party gateway rollbacks the process until that stage. Upon recovery, the crashed gateway learns that the counterparty gateway has initated a rollback, and it proceeds accordingly (by also initating a rollback). Note that rollbacks can also happen in case of unresolved errors.</t>
+	<t>The non-crashed gateway that conducts the rollback tries to communicate with the crashed gateway from time to time (self healing) or to contact the backup gateways (primary-backup). In any case, and upon the completion of a rollback, the non-crashed gateway sends a ROLLBACK message to the recovered gateway to notify that a rollback happened. The recovered gateway should answer with ROLLBACK-ACK.</t>
 	<t>Since the self-healing recovery process does not require changes to the protocol (since from the counterparty gateway perspective, the sender gateway is just taking longer than normal; there are no new actions done or logs recorded), we focus on the primary-backup paradigm.</t>
 		
 		<section anchor="session-resume-section-pb" title="Primary-Backup Session Resumption">
@@ -1965,11 +1966,107 @@
 			<t>After that, the gateways agree on the current state of the protocol. </t>
 
 			<t>We now illustrate a situation where the source gateway crashes, and later recovers, before max_timeout expires:</t>
-			<t>TBD</t>
+<figure align="center" anchor="crash-recovery-core-v0.1">
+  <artwork>
+  <![CDATA[                                         
+                    ,--------------.          ,----------.                                                                         ,----------.                                                  ,--------------.          
+                    |State Data DB1|          |Gateway G1|                                                                         |Gateway G2|                                                  |State Data DB2|          
+                    `--------------'          `----------'                                                                         `----------'                                                  `--------------'          
+                           |                       |                                Lock-Assertion (2.2)                                |                                                               |                  
+                           |                       | ----------------------------------------------------------------------------------->                                                               |                  
+                           |                       |                                                                                    |                                                               |                  
+                           |                       |----.                                                                               |                                                               |                  
+                           |                       |    | <color:red><warning> Crash <warning>                                          |                                                               |                  
+                           |                       |<---'                                                                               |                                                               |                  
+                           |                       |                                                                                    |                                                               |                  
+                           |                       |                                                                                    |                                                               |                  
+                           |                       |                                                                                    |----.                                                          |                  
+                           |                       |                                                                                    |    | do Lock-Assertion Broadcast (2.3)                        |                  
+                           |                       |                                                                                    |<---'                                                          |                  
+                           |                       |                                                                                    |                                                               |                  
+                           |                       | Lock-Assertion-Receipt (2.4) <color:red><&warning> Gets 503 or no answer <&warning>|                                                               |                  
+                           |                       |                                                                                    |                                                               |                  
+                           |                       | <-----------------------------------------------------------------------------------                                                               |                  
+                           |                       |                                                                                    |                                                               |                  
+                           |                       |                                                                                    |                                                               |                  
+                           |        ______________________________________________________________________________________________________________________________________________________________________________________ 
+                           |        ! ALT  /  retry until application timeout                                                           |                                                               |                 !
+                           |        !_____/        |                                                                                    |                                                               |                 !
+                           |        !              |                          send Lock-Assertion-Receipt (2.4)                         |                                                               |                 !
+                           |        !              | <-----------------------------------------------------------------------------------                                                               |                 !
+                           |        !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
+                           |        ! [Failure]    |                                                                                    |                                                               |                 !
+                           |        !              |                                                                                    |                  record G1 has crashed, wait                  |                 !
+                           |        !              |                                                                                    | -------------------------------------------------------------->                 !
+                           |        !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
+                           |                       |                                                                                    |                                                               |                  
+                           |                       |                                                                                    |                                                               |                  
+          ________________________________________________________________________________________________________________________________________________________________________________________________________________ 
+          ! ALT  /  waiting until max_timeout      |                                                                                    |                                                               |                 !
+          !_____/          |                       |                                                                                    |                                                               |                 !
+          !                |                       |----.                                                                               |                                                               |                 !
+          !                |                       |    | <color:green> recovers from crash                                             |                                                               |                 !
+          !                |                       |<---'                                                                               |                                                               |                 !
+          !                |                       |                                                                                    |                                                               |                 !
+          !                |                       |                                <color:green> RECOVER                               |                                                               |                 !
+          !                |                       | ----------------------------------------------------------------------------------->                                                               |                 !
+          !                |                       |                                                                                    |                                                               |                 !
+          !                |                       |                            <color:green> RECOVER-UPDATE                            |                                                               |                 !
+          !                |                       | <-----------------------------------------------------------------------------------                                                               |                 !
+          !                |                       |                                                                                    |                                                               |                 !
+          !                |      update state     |                                                                                    |                                                               |                 !
+          !                | <----------------------                                                                                    |                                                               |                 !
+          !                |                       |                                                                                    |                                                               |                 !
+          !                |                       |                          <color:green> RECOVER-UPDATE-ACK                          |                                                               |                 !
+          !                |                       | ----------------------------------------------------------------------------------->                                                               |                 !
+          !                |                       |                                                                                    |                                                               |                 !
+          !                |                       |                            Lock-Assertion-Receipt (2.4)                            |                                                               |                 !
+          !                |                       | <-----------------------------------------------------------------------------------                                                               |                 !
+          !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
+          ! [Failure]      |                       |                                                                                    |                                                               |                 !
+          !                |                       |                                                                                    |                record G1 has crashed definitely               |                 !
+          !                |                       |                                                                                    | -------------------------------------------------------------->                 !
+          !                |                       |                                                                                    |                                                               |                 !
+          !                |                       |                                                                                    |----.                                                                            !
+          !                |                       |                                                                                    |    | <color:red><&warning> Initiate rollback process <&warning>                 !
+          !                |                       |                                                                                    |<---'                                                                            !
+          !                |                       |                                                                                    |                                                                                 !
+          !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
+                    ,--------------.          ,----------.                                                                         ,----------.                                                  ,--------------.          
+                    |State Data DB1|          |Gateway G1|                                                                         |Gateway G2|                                                  |State Data DB2|          
+                    `--------------'          `----------'                                                                         `----------'                                                  `--------------'          
+
+  ]]>
+  </artwork>
+</figure>
 
 
+<t><eref target="http://www.plantuml.com/plantuml/png/dL9TQzj047pNhrWIA3LKfL7Q5nD4_E6Qqa23-_5KA9kxZNpuT2TsLtNzxtjILEF4xWUzXuDZXfcvdRqMHTQszXa5TRg3iu-AIZ17HPXFByu01UpTnHvU9dIBErW-G58T8qMFS7LQiXWaYwm_KkKbLsEuYMQJJqI8rSK0pukNnQW79O5N9lh8OoPRNcsHWmjL2JD6MSF-_JLa6GzYDZxLct94Qr2qKxuSzKmviirNPCWrFUdrw97jixtlabJWpQjBY0mX0WRP4i068AWr_Dbz1RERrorrgbl2PYKTz06THwmQRmps4TJLrDiDODqk8AyX2wOKB1_JfUH5uBpMnSsy1QTRvaEDDA0ny1a8jlK5QnHm7G38_i2jkWqI_gdStPe-iUGjCOVtmuIFccaOg9GzZxVYGNkETOFFXaCR3vYhnQp3ryMA-WeGm-d6Vdds_daq-ANRrh3CRIDHIKGJVVVFGQ5V39xtvF_gVRiVoSBbkvTS4f-Ty3lmlrcbTubikk-mz7xEpGRQ3WQ4dcyJbrLr-bgQ_yJ">Link to the PlantUML diagram referring to the above figure can be found here.</eref>
+
+</t>
 
 		</section>
+
+		<section anchor="session-resume-recovery-msg" title="Recovery Messages">
+		<t>We have omitted the logging procedure (only focusing the different messages). As defined in the crash recovery draft [draft-belchior-gateway-recovery-05], there are a set of messages that are exchanged between the recovered gateway and counterparty gateway:</t>
+		
+		<t><list style="symbols">
+
+		<t>RECOVER: when a gateway crashes and recovers, it sends a RECOVER message to the counterparty gateway, informing them of its most recent state. The message contains various parameters such as the session ID, message type, SATP phase, sequence number, a flag indicating if the sender is a backup gateway, the new public key if the sender is a backup, the timestamp of the last known log entry, and the sender's digital signature.</t>
+		<t>RECOVER-UPDATE: Upon receiving the RECOVER message, the counterparty gateway sends a RECOVER-UPDATE message. This message carries the difference between the log entry corresponding to the received sequence number from the recovered gateway and the latest sequence number (corresponding to the latest log entry). The message includes parameters such as the session ID, message type, the hash of the previous message, the list of log messages that the recovered gateway needs to update, and the sender's digital signature.</t>
+		<t>RECOVER-SUCCESS: The recovered gateway responds with a RECOVER-SUCCESS message if its logs have been successfully updated. If there are inconsistencies detected, the recovered gateway initiates a dispute with a RECOVER-DISPUTE message. The message parameters include session ID, message type, the hash of the previous message, a boolean indicating success, a list of hashes of log entries that were appended to the recovered gateway log, and the sender's digital signature.</t>
+			</list></t>
+
+		<t>In case the recovery procedure has failed and a rollback process is needed, the following messages are used:</t>
+
+		<t><list style="symbols">
+
+		<t>ROLLBACK: A gateway that initiates a rollback sends a ROLLBACK message. The message parameters include session ID, message type, a boolean indicating success, a list of actions performed to rollback a state (e.g., UNLOCK, BURN), a list of proofs specific to the DLT [SATP], and the sender's digital signature.</t>
+		<t>ROLLBACK-ACK: Upon successful rollback, the counterparty gateway sends a ROLLBACK-ACK message to the recovered gateway acknowledging that the rollback has been performed successfully. The message parameters are similar to those of the ROLLBACK message.</t>
+			</list></t>
+
+		</section>
+
 	</section>
    	<!-- END SECTION -->
 
