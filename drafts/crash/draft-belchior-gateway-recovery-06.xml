@@ -129,7 +129,7 @@ particularly important to guarantee asset consistency across networks.
 
 The crash recovering mechanism is applied to a version of SATP using either 2PC or 3PC, which are atomic commitment protocol (ACP).
 2PC and 3PC considers two roles: a coordinator who manages the protocol's execution and participants who manage the resources that must be kept consistent. The origin gateway plays the ACP role of Coordinator, and the destination Gateway plays the Participant role in relay mode. Gateways exchange messages corresponding to the protocol execution, generating log entries for each one.
-	</t>
+The crash recovery draft does not depend on the specific SATP messages, but defines procedures to recover from crashes and for rollbacks, independently of the specific protocol phase being executed.</t>
 
 	<t>
 Log entries are organized into logs. Logs enable either the same or other backup gateways to resume any phase of SATP. This log can also serve as an accountability tool in case of disputes. Log entries are then the basis satisfying one of the key deployment requirements of gateways for asset transfers: a high degree of availability. In this document, we consider two common strategies to increase availability: (1) to support the recovery of the gateways (self-healing model) and (2) to employ backup gateways with the ability to resume a stalled transfer (primary-backup model).</t>
@@ -346,9 +346,56 @@ Without loss of generality, the above logging model applies to all phases of SAT
 
 <section anchor="fig3.2-concrete" title="Concrete example">
 
-<t>This example showcases the logging procedure step 2.4 of SATP (lock-assertion) by both gateways.</t>
+<t><eref target="//www.plantuml.com/plantuml/png/VP6nQiCm48PtFyMHAGQv4BLJXv8C9HGoz1Mkpg6AA9AvEv7wxIkPjXbSU_q_lay7seiYQxw6Xg9w7M5pHAKRZd3SRG05nCs9dGZVoIavEBo_JND8hi6iAURh1t7JYEjUn3r35XzTfO23dzQGodnZhrJyrwWyRgsn3xRR6H-zTY7rbmv5YDMds4uE5-LKzyFl3jkYj0sl1QsXB-fdGVu9LfYLe7Buup1yej1w-D6SKwJ5iAD8ZFCoKqz-q7jxcuOACBJrcKLX_PWdW_tbtrka60l5FSLp-Vvl">This example showcases the logging procedure step 2.4 of SATP (lock-assertion) by both gateways.</eref>
 
-<t>(TBD insert figure 3.2)</t>
+</t>
+
+	<figure align="center" anchor="fig3.2">
+
+    <artwork><![CDATA[                                         
+     ,----------.               ,----------.                                   ,-------.
+     |Gateway G1|               |Gateway G2|                                   |Log API|
+     `----------'               `----------'                                   `-------'
+          |----.                     |                                             |    
+          |    | 1 using log api     |                                             |    
+          |<---'                     |                                             |    
+          |                          |                                             |    
+          |              2 writeLogEntry(2,2.2-1,init-lock-assertion)              |    
+          | ----------------------------------------------------------------------->    
+          |                          |                                             |    
+          |  3 Lock-Assertion (2.2)  |                                             |    
+          | ------------------------->                                             |    
+          |                          |                                             |    
+          |                          | 4 writeLogEntry(2,2.2-2,exec-lock-assertion)|    
+          |                          | -------------------------------------------->    
+          |                          |                                             |    
+          |                          |----.                                        |    
+          |                          |    | 5 execute lock assertion phase         |    
+          |                          |<---'                                        |    
+          |                          |                                             |    
+          |                          | 6 writeLogEntry(2,2.2-3,done-lock-assertion)|    
+          |                          | -------------------------------------------->    
+          |                          |                                             |    
+          |                          |----.                                        |    
+          |                          |    | 7 generate lock assertion receipt      |    
+          |                          |<---'                                        |    
+          |                          |                                             |    
+          |                          |  8 (optional) write lock assertion receipt  |    
+          |                          | -------------------------------------------->    
+          |                          |                                             |    
+          |                          | 9 writeLogEntry(2,2.2-4,ack-lock-assertion) |    
+          |                          | -------------------------------------------->    
+          |                          |                                             |    
+          | 10 lock assertion receipt|                                             |    
+          | <-------------------------                                             |    
+     ,----------.               ,----------.                                   ,-------.
+     |Gateway G1|               |Gateway G2|                                   |Log API|
+     `----------'               `----------'                                   `-------'
+
+   ]]></artwork>
+  </figure>
+
+
 </section>
 
 <section anchor="lst" title="Log Storage Modes">
@@ -785,10 +832,9 @@ Note that, in this phase, distributed ledgers were changed by gateways. The cras
 
 
 			<t>
-			This phase of SATP follows the Crash Recovery Model from Section 6.1 and extra steps because in the third phase, distributed gateways changed ledgers.
-
+			
 As transactions cannot be undone on blockchains, reverting a transaction includes issuing new transactions (with the contrary effect of the ones to be reverted). We use a rollback list to keep track of which transaction may be rolled back.
-The crash recovery protocol for the Commitment Establishment Flow is as follows (steps according to Figure 4):
+The crash recovery protocol for the Stage 2 (lock) and Stage 3 (mint) is as follows:
 
 
 			
@@ -800,32 +846,32 @@ The crash recovery protocol for the Commitment Establishment Flow is as follows 
 					</t>
 					
 					<t>
-					2. On step 2.3, add a pre-lock transaction to the origin gateway rollback list.
+					2. On step 2.1A, add a pre-lock transaction to the origin gateway rollback list.
 					</t>
 
 					
 					<t>
-					3. On step 3.2, if the request is denied, abort the transaction and apply rollbacks on the origin gateway.
+					3. On step 2.1B, if the request is denied, abort the transaction and apply rollbacks on the origin gateway.
 					</t>
 
 					
 					<t>
-					4. On step 3.3, add a lock transaction to the origin gateway rollback list.
+					4. On step 3.4A, add a lock transaction to the origin gateway rollback list.
 					</t>
 
 					
 					<t>
-					5. On step 3.4, if the commit fails, abort the transaction and apply rollbacks on the origin gateway.
+					5. On step 3.4B, if the commit fails, abort the transaction and apply rollbacks on the origin gateway.
 					</t>
 
 					
 					<t>
-					6. On step 3.5,  add a create asset transaction to the rollback list of the destination gateway.
+					6. On step 3.6A,  add a create asset transaction to the rollback list of the destination gateway.
 					</t>
 
 					
 					<t>
-					7. On step 3.8, if the commit is successful, SATP terminates.
+					7. On step 3.8, if the commit is successful (confirmed by the ack final receipt), SATP terminates (3.9).
 					</t>
 							
 					<t>
@@ -941,11 +987,14 @@ This message type is encoded on the recovery message field of an SATP log.
 			
 				</section>
 
-				<section anchor="SATP-2pcm-rua" title="RECOVER-UPDATE ACK">
+				<section anchor="SATP-2pcm-rua" title="RECOVER-SUCCESS">
 	
 				<t>
-				The recover-update ack message (response to RECOVER-UPDATE) states if the recovered gateway's logs have been successfully updated.
+				The recover-success message (response to RECOVER-UPDATE) states if the recovered gateway's logs have been successfully updated.
 				If inconsistencies are detected, the recovered gateway answers with initiates a dispute (RECOVER-DISPUTE message).
+				</t>
+								<t>
+				The counterparty gateway sends this message to sinalize the recovered gateway acknowledging that the state is synchronized.
 				</t>
 	
 				<t>
@@ -977,41 +1026,6 @@ This message type is encoded on the recovery message field of an SATP log.
 						</t>
 					</list>
 				</t>				
-			
-				</section>
-
-				<section anchor="SATP-2pcm-rs" title="RECOVER-SUCCESS">
-	
-				<t>
-				The counterparty gateway sends the recover-ack message to the recovered gateway acknowledging that the state is synchronized.
-				</t>
-	
-				<t>
-				The parameters of this message consist of the following:
-
-				
-					<list style="decimal">
-						<t>
-						Session ID: a unique identifier (UUIDv2) representing a session.
-						</t>
-						
-						<t>
-						Message Type REQUIRED: urn:ietf:SATP-2pc:msgtype:recover-update-ack-msg.
-						</t>
-
-						<t>
-						Hash Recover Update Ack Message REQUIRED. The hash of previous message.
-						</t>
-
-						<t>
-						success: true/false.
-						</t>
-						
-						<t>
-						Sender Signature REQUIRED. The digital signature of the sender.
-						</t>
-					</list>
-				</t>
 			
 				</section>
 
