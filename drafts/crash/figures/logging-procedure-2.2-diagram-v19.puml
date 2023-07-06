@@ -1,0 +1,19 @@
+@startuml
+
+entity "Gateway G1" as sg
+entity "Gateway G2" as rg
+entity "Log API" as log
+autonumber
+
+sg->sg: using log api
+sg->log: writeLogEntry(2,2.2-1,init-lock-assertion)
+sg->rg: Lock-Assertion (2.2)
+rg->log: writeLogEntry(2,2.2-2,exec-lock-assertion)
+rg->rg: execute lock assertion phase
+rg->log: writeLogEntry(2,2.2-3,done-lock-assertion)
+rg->rg: generate lock assertion receipt
+rg->log: (optional) write lock assertion receipt
+rg->log: writeLogEntry(2,2.2-4,ack-lock-assertion)
+rg->sg: lock assertion receipt
+
+@enduml

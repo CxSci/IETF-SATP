@@ -37,7 +37,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
-<rfc category="info" docName="draft-belchior-gateway-recovery-06" ipr="trust200902">
+<rfc category="info" docName="draft-belchior-satp-gateway-crash-recovery-07" ipr="trust200902">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
      you can add the attributes updates="NNNN" and obsoletes="NNNN" 
@@ -81,7 +81,7 @@
       </address>
     </author>
 
-    <date day="21" month="June" year="2023"/>
+    <date day="6" month="July" year="2023"/>
 
     <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
          in the current day for you. If only the current year is specified, xml2rfc will fill 
