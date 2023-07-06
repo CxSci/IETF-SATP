@@ -1,0 +1,41 @@
+
+@startuml
+
+entity "State Data DB1" as db1
+entity "Gateway G1" as sg
+entity "Gateway G2" as rg
+entity "State Data DB2" as db2
+
+autonumber
+
+
+
+sg->rg: Lock-Assertion (2.2)
+sg->sg: Crash
+
+rg->rg: do Lock-Assertion Broadcast (2.3)
+rg->sg: Lock-Assertion-Receipt (2.4) Gets 503 or no answer
+
+alt#Gold #LightBlue retry until application timeout
+    rg -> sg: send Lock-Assertion-Receipt (2.4) 
+else #Pink Failure
+    rg -> db2: record G1 has crashed, wait
+end
+
+alt#Gold #LightBlue waiting until max_timeout
+   sg->sg: recovers from crash
+    sg->rg: RECOVER 
+   rg->sg: RECOVER-UPDATE
+   sg->db1: update state
+    sg->rg: RECOVER-UPDATE-ACK
+    rg->sg: Lock-Assertion-Receipt (2.4) 
+
+else #Pink Failure
+    rg -> db2: record G1 has crashed definitely
+    rg -> rg: Initiate rollback process\n
+end
+
+
+   
+
+@enduml

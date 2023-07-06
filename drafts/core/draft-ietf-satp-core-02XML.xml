@@ -1,0 +1,2484 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- This template is for creating an Internet Draft using xml2rfc,
+     which is available here: http://xml2rfc.tools.ietf.org. -->
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!-- One method to get references from the online citation libraries.
+     There has to be one entity for each item to be referenced. 
+     An alternate method (rfc include) is described in the references.c.m.d.i.p.t.. -->
+
+<!ENTITY RFC2119 SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC2629 SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2629.xml">
+<!ENTITY RFC3552 SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3552.xml">
+<!ENTITY RFC2234 SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2234.xml">
+<!ENTITY RFC5939 SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5939.xml">
+<!ENTITY RFC7519 SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7519.xml">
+<!ENTITY I-D.narten-iana-considerations-rfc2434bis SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.narten-iana-considerations-rfc2434bis.xml">
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<!-- used by XSLT processors -->
+<!-- For a complete list and description of processing instructions (PIs), 
+     please see http://xml2rfc.tools.ietf.org/authoring/README.html. -->
+<!-- Below are generally applicable Processing Instructions (PIs) that most I-Ds might want to use.
+     (Here they are set differently than their defaults in xml2rfc v1.32) -->
+<?rfc strict="yes" ?>
+<!-- give errors regarding ID-nits and DTD validation -->
+<!-- control the table of contents (ToC) -->
+<?rfc toc="yes"?>
+<!-- generate a ToC -->
+<?rfc tocdepth="4"?>
+<!-- the number of levels of subsections in ToC. default: 3 -->
+<!-- control references -->
+<?rfc symrefs="yes"?>
+<!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?>
+<!-- sort the reference entries alphabetically -->
+<!-- control vertical white space 
+     (using these PIs as follows is recommended by the RFC Editor) -->
+<?rfc compact="yes" ?>
+<!-- do not start each main section on a new page -->
+<?rfc subcompact="no" ?>
+<!-- keep one blank line between list items -->
+<!-- end of list of popular I-D processing instructions -->
+<rfc category="info" docName="draft-ietf-satp-core-02" ipr="trust200902">
+  <!-- category values: std, bcp, info, exp, and historic
+     ipr values: full3667, noModification3667, noDerivatives3667
+     you can add the attributes updates="NNNN" and obsoletes="NNNN" 
+     they will automatically be output with "(if approved)" -->
+
+  <!-- ***** FRONT MATTER ***** -->
+
+  <front>
+    <!-- The abbreviated title is used in the page header - it is only necessary if the 
+         full title is longer than 39 characters -->
+
+
+    <title abbrev="SATP Core">Secure Asset Transfer Protocol (SATP)</title>
+
+       <author fullname="Martin Hargreaves" initials="M" surname="Hargreaves">
+      <organization>Quant Network</organization>
+      <address>
+        <email>martin.hargreaves@quant.network</email>
+      </address>
+    </author>
+
+    
+    <author fullname="Thomas Hardjono" initials="T" surname="Hardjono">
+      <organization>MIT</organization>
+      <address>
+        <email>hardjono@mit.edu</email>
+      </address>
+    </author>
+
+    <author fullname="Rafael Belchior" initials="R" surname="Belchior">
+      <organization>INESC-ID, Instituto Superior T&eacute;cnico, and Blockdaemon</organization>
+      <address>
+        <email>rafael.belchior@tecnico.ulisboa.pt</email>
+      </address>
+    </author>
+
+
+    <date day="21" month="June" year="2023"/>
+
+    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
+         in the current day for you. If only the current year is specified, xml2rfc will fill 
+	 in the current day and month for you. If the year is not the current one, it is 
+	 necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the 
+	 purpose of calculating the expiry date).  With drafts it is normally sufficient to 
+	 specify just the year. -->
+
+    <!-- Meta-data Declarations -->
+
+    <area>General</area>
+
+    <workgroup>Internet Engineering Task Force</workgroup>
+
+    <!-- WG name at the upperleft corner of the doc,
+         IETF is fine for individual submissions.  
+	 If this element is not present, the default is "Network Working Group",
+         which is used by the RFC Editor as a nod to the history of the IETF. -->
+
+    <keyword>template</keyword>
+
+    <!-- Keywords will be incorporated into HTML output
+         files in a meta tag but they have no effect on text or nroff
+         output. If you submit your draft to the RFC Editor, the
+         keywords will be used for the search engine. -->
+
+    <abstract>
+	<t>This memo This memo describes the Secure Asset Transfer (SAT) Protocol for digital assets. 
+	SAT is a protocol operating between two gateways that conducts 
+	the transfer of a digital asset from one gateway to another. 
+	The protocol establishes a secure channel between the endpoints and 
+	implements a 2-phase commit to ensure the properties of transfer 
+	atomicity, consistency, isolation and durability.</t>
+    </abstract>
+  </front>
+
+
+  <middle>
+
+
+    <!-- START SECTION -->
+    
+	<section anchor="introduction" title="Introduction">
+
+ 	<t>This memo proposes a secure asset transfer protocol (SATP) that is
+   intended to be deployed between two gateway endpoints 
+   to transfer a digital asset from an origin network 
+   to a destination network.</t> 
+
+
+ 	<t>Both the origin and destination networks are assumed to be opaque 
+ 	in the sense that the interior constructs of a given network 
+ 	is not read/write accessible to unauthorized entities. </t> 
+
+ 	<t>The protocol utilizes the asset burn-and-mint paradigm whereby the asset 
+ 	to be transferred is permanently disabled or destroyed (burned) 
+ 	at the origin network and is re-generated (minted) at the destination network. 
+ 	This is achieved through the coordinated actions of the peer gateways 
+ 	handling the unidirectional transfer at the respective networks. </t> 
+
+ 	<t>A gateway is assumed to be trusted to perform the tasks involved in the asset transfer. </t> 
+
+ 	<t>The overall aim of the protocol is to ensure that the state of assets 
+ 	in the origin and destination networks remain consistent, 
+ 	and that asset movements into (out of) networks via gateways can be accounted for. </t> 
+
+ 	<t>There are several desirable technical properties of the protocol.  
+ 	The protocol must ensure that the properties of atomicity, consistency, 
+ 	isolation, and durability (ACID) are satisfied. </t> 
+ 
+ 	<t> The requirement of consistency implies that the
+ 	asset transfer protocol always leaves both networks 
+ 	in a consistent state (that the asset is located in 
+ 	one system/network only at any time).</t>
+ 
+ 	<t> Atomicity means that the protocol must guarantee 
+ 	that either the transfer commits (completes) or entirely fails, 
+ 	where failure is taken to mean there is no change to the 
+ 	state of the asset in the origin (sender) network.</t>
+ 
+ 	<t> The property of isolation means that while a transfer 
+ 	is occurring to a digital asset from an origin network, 
+ 	no other state changes can occur to the asset.</t>
+ 
+ 	<t> The property of durability means that once 
+ 	the transfer has been committed by both gateways, 
+ 	that this commitment must hold regardless of subsequent 
+ 	unavailability (e.g. crash) of the gateways implementing the SAT protocol.</t> 
+
+
+ 	<t>All messages exchanged between gateways are assumed to run over TLS1.2, 
+ 	and the endpoints at the respective gateways are associated with 
+ 	a certificate indicating the legal owner (or operator) of the gateway.</t>
+
+	</section>
+    <!-- END SECTION -->
+
+
+
+
+
+    <!-- START SECTION -->
+	<section anchor="sec-conventions" title="Conventions used in this document">
+	
+	<t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", 
+	"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" 
+	in this document are to be interpreted as described in RFC 2119 [RFC2119].</t>
+
+	<t>In this document, these words will appear with that interpretation
+	only when in ALL CAPS. Lower case uses of these words are not to be
+	interpreted as carrying significance described in RFC 2119. </t>
+		
+	</section>
+    <!-- END SECTION -->
+
+    
+
+    <!-- START SECTION -->
+	<section anchor="terminology" title="Terminology">
+
+	<t>The following are some terminology used in the current document:</t>
+
+	 <t> Client application: This is the application employed by a user 
+	 to interact with a gateway. </t>
+
+ 	<t> Gateway: The computer system functionally capable of acting 
+ 	as a gateway in an asset transfer. </t> 
+
+ 	<t> Sender gateway: The gateway that initiates a unidirectional asset transfer. </t> 
+
+ 	<t> Recipient gateway: The gateway that is the recipient side of 
+ 	a unidirectional asset transfer. </t> 
+
+ 	<t> Claim: An assertion made by an Entity [JWT]. </t>
+
+ 	<t> Claim Type: Syntax used for representing a Claim Value [JWT]. </t>
+
+ 	<t> Gateway Claim: An assertion made by a Gateway regarding the status or 
+ 	condition of resources (e.g. assets, public keys, etc.) 
+ 	accessible to that gateway (e.g. within its network or system). </t> 
+
+	</section>
+    <!-- END SECTION -->
+
+
+
+
+    <!-- SECTION -->
+	<section anchor="satp-overview-section" title="The Secure Asset Transfer Protocol">
+
+
+
+   		 <!-- SUBSECTION -->
+		<section anchor="satp-overview" title="Overview">
+
+		<t> The Secure Asset Transfer Protocol (SATP) is a gateway-to-gateway protocol 
+		used by a sender gateway with a recipient gateway to perform 
+		a unidirectional transfer of a digital asset. </t> 
+
+		<t> The protocol defines a number of API endpoints, 
+		resources and identifier definitions, 
+		and message flows corresponding to the asset transfer 
+		between the two gateways. </t> 
+
+
+		
+
+		<figure align="center" anchor="fig-odap-overview">
+		<artwork><![CDATA[                                         
+        
+             +----------+                +----------+
+             |  Client  |                | Off-net  |
+             |   (App)  |                | Resource |
+             +----------+                +----------+
+                  |                      |API Type-3|
+                  |                      +----------+
+                  |                           ^
+                  V                           |
+             +----------+                     |
+             |API Type-1|                     |
+  +------+   +----------+----+        +----+----------+   +------+
+  |      |   |          |    |        |    |          |   |      |
+  | Net. |   | Gateway  |API |        |API | Gateway  |   | Net. |
+  | NW1  |---|    G1    |Type|<------>|Type|    G2    |---| NW2  |
+  |      |   |          | 2  |        | 2  |          |   |      |
+  +------+   +----------+----+        +----+----------+   +------+
+
+		]]></artwork>
+      	</figure>
+
+      	
+		</section>
+   		 <!-- END SUBSECTION -->
+   		 
+
+
+   		 <!-- SUBSECTION -->
+		<section anchor="odap-model" title="SAT Model">
+
+		<t> The model for SATP is shown in Figure 1. </t> 
+
+		<t> The Client (application) interacts with its local gateway (G1) 
+		over an interface (API Type-1) in order to provide instructions 
+		to the gateway with regards to actions to assets and related 
+		resources located in the local system or network (NW1). </t> 
+
+		<t> Gateways interact with each other over a gateway interface (API Type- 2). 
+		A given gateway may be required to access resources that are 
+		not located in network NW1 or network NW2. 
+		Access to these types of resources are performed 
+		over an off-network interface (API Type-3).</t> 
+
+		</section>
+   		 <!-- END SUBSECTION -->
+   		 
+
+
+
+   		 <!-- SUBSECTION -->
+		<section anchor="satp-apitypes" title="Types of APIs">
+		<t>The following are the types of APIs in SATP:</t>
+		
+				<t><list style="symbols">
+				<t> Gateway APIs for client (API Type-1): 
+				This the REST APIs that permit a Client (application) 
+				to interact with a local gateway, 
+				and issue instructions for actions pertaining 
+				to resources accessible to the gateway. </t> 
+
+				<t> Gateway APIs for peer gateways (API Type-2): 
+				This is the REST APIs employed by two (2) peer gateways 
+				in performing unidirectional asset transfers. </t> 
+
+				<t> APIs for validation of off-network resources (API Type-3): 
+				This is the REST APIs made available by a resource server (resource owner) 
+				at which a gateway can access resources. </t> 
+				</list></t>
+
+		<t>The use of these APIs is dependent on the mode of access and the type of flow in question.</t>
+		</section>
+   		 <!-- END SUBSECTION -->
+
+
+
+   		 <!-- SUBSECTION -->
+		<section anchor="odap-flowtypes" title="Types of Flows">
+
+		<t>The SAT protocol defines the following three (3) flows:</t>
+		
+				<t><list style="symbols">
+
+				<t> Transfer Initiation flow: 
+				This flow deals with commencing a transfer from one gateway to another. 
+				Several tasks are involved, including (but not limited to):
+				(i) gateway identification and 
+				mutual authentication; 
+				(ii) exchange of asset type (definition) information; 
+				(iii) verification of the asset definition, and others. </t> 
+
+				<t> Lock-Assertion flow: This flow deals with the conveyance of 
+				signed assertions from the sender gateway to the receiver gateway 
+				regarding the locked status of an asset at the origin network.</t> 
+
+				<t> Commitment Establishment flow: 
+				This flow deals with the asset transfer and commitment 
+				establishment between two gateways. </t> 
+
+				</list></t>
+		<t>These flow will be discussed below.</t>
+		</section>
+   		 <!-- END SUBSECTION -->
+   		 
+
+   		 <!-- SUBSECTION -->
+		<section anchor="satp-resources-ident" title="Resources and Identifiers">
+		
+			<t> (a) Resource addressing for systems or networks, 
+			using the URL syntax. </t> 
+
+			<t> (b) Client identification based on the URN format. 
+			These are for identifying clients (developers and applications) 
+			who access these resources, 
+			and which in some use-cases require access authorization. </t> 
+
+			<t> (c) Protocol message family for negotiating authentication, 
+			authorisation, and parameters for confidential channel establishment. </t> 
+
+			<t> (d) Resource discovery mechanism for developers 
+			and applications to discover resources hosted at a gateway. 
+			The gateway response is subject to the level of access granted 
+			to that developer or application. </t> 
+
+
+		</section>
+   		 <!-- END SUBSECTION -->
+
+
+		
+	</section>
+    <!-- END SECTION -->
+
+
+
+
+
+    <!-- START SECTION -->
+	<section anchor="satp-messages-identifiers" title="SATP Message Format, identifiers and Descriptors">
+
+
+   		 <!-- SUBSECTION -->
+  		<section anchor="overview-messages-identifiers" title="Overview">
+
+  		 <t> This section describes (i) the phases of SATP; 
+  		 (ii) the format of SATP messages; (iii) the format for resource descriptors;
+  		(iv) a method for gateways to implement access controls; 
+  		(iv) protocol for negotiating security capabilities; 
+  		(v) discovery and accessing resources and provisions for 
+  		backward compatibility with existing systems. </t> 
+
+		</section>
+   		 <!-- END SUBSECTION -->
+
+
+  		
+   		 <!-- SUBSECTION -->
+		<section anchor="Messageformat-sec" title="SATP Message Format">
+
+		 <t> SATP messages are exchanged between applications (clients) 
+		 and gateways (servers). 
+		 They consist of protocol negotiation and functional messages. </t> 
+
+		 <t> Messages are in JSON format, with protocol specific mandatory fields, 
+		 support for several authentication and authorization schemes and support 
+		 for a free format field for plaintext or encrypted payloads 
+		 directed at the gateway. </t> 
+
+		<t>JSON format message, mandatory fields are shown below:</t>
+				<t><list style="symbols">
+				<t>Version: SATP protocol Version (major, minor).</t>
+				<t>Message Type: This refers to the type of request or response to be conveyed in this message.</t>
+				<t>Session ID: unique identifier (UUIDv2) representing 
+				   a session between two gateways handling a single unidirectional transfer.</t>
+				<t>Transfer-Context ID: unique optional identifier (UUIDv2) 
+				representing the application layer context.</t>
+				<t>Sequence Number: Monotonically increasing counter that uniquely represents a message from a session.</t>
+				<t>Resource URL: Location of Resource to be accessed.</t>
+				<t>Developer URN: Assertion of developer / application identity.</t>
+				<t>Action/Response: GET/POST and arguments (or Response Code)</t>
+				<t>Credential Profile: Specify type of auth (e.g. SAML, OAuth, X.509)</t>
+				<t>Credential Block: Credential token, certificate, string</t>
+				<t>Payload Profile: Asset profile and capabilities</t>
+				<t>Application Profile: Vendor or Application specific profile</t>
+				
+				<t>Payload: Payload for POST, responses, and local networks. 
+					The payload is specific to the current SAT phase.</t>
+					
+				<t>Payload Hash: hash of the current message payload.</t>
+				<t>Message signature: Gateway EDCSA signature over the message</t>
+				</list></t>
+				
+		<t>Other relevant attributes may exists that need to be 
+		captured for logging purposes.</t>
+	     </section>
+   		 <!-- END SUBSECTION -->
+
+   		 
+
+
+   		 <!-- SUBSECTION -->
+		<section anchor="resource-descriptor-sec" title="Digital Asset Resource Descriptors">
+
+		<t>Resources are identified by URL [RFC 1738] as described below:</t>
+				<t><list style="symbols">
+					<t>The type is new: application/satres</t>
+					<t>The access protocol is SATP.</t>
+				</list></t>
+
+		<t>Data included in the URL includes the folowing:</t>
+
+
+
+   		 		<!-- SUB-SUBSECTION -->
+				<section anchor="org-id-sec" title="Organization Identifier">
+
+				 <t> This MAY be a Legal Entity Identifier (LEI) or other 
+				 identifier linking resource ownership to a real world entity. 
+				 Any scheme for identifying gateway owners may be implemented 
+				 (e.g. LEI directory, closed user group membership, SWIFT BIC, etc.). </t> 
+
+ 				<t> The developer or application MAY validate the identity 
+ 				with the issuing authority. 
+ 				The identifier is not a trusted identity, 
+ 				but MAY be relied on where trust has been established 
+ 				between the two parties (e.g. in a closed user group). </t> 
+
+				<t>The mechanisms to determine organizations identifiers 
+				is out of scope for the current specification.</t>
+
+				</section>
+
+
+   		 		<!-- SUB-SUBSECTION -->
+				<section anchor="gateway-id-sec" title="Gateway / Endpoint ID">
+
+				<t>FQDN of the SATP compliant gateway. Required to establish IP connectivity. 
+				This MUST resolve to a valid IP address.</t>
+
+				</section>
+
+
+
+   		 		<!-- SUB-SUBSECTION -->
+				<section anchor="dlt-id-sec" title="Network or system Identifier">
+
+ 				<t> Specific to the gateway behind which the target network operates. 
+ 				This field is local to the gateway and is used to direct 
+ 				SATP interactions to the correct underlying network. 
+ 				This value maybe alphanumeric or a hexadecimal value. </t> 
+
+ 				<t> For example: "tradelens-network", "EU-supply-chain". </t> 
+
+	
+				</section>
+
+
+
+   		 		<!-- SUB-SUBSECTION -->
+				<section anchor="dlt-resource-sec" title="Resource">
+
+ 				<t> Specifies a resource held on the underlying network. 
+ 				This field must be meaningful to the network in question 
+ 				but is otherwise an arbitrary string. 
+ 				The underlying object it points to may be a network address, 
+ 				data block, transaction ID, alias, etc. or 
+ 				a future object type not yet defined. </t> 
+
+				</section>
+
+   		 		<!-- SUB-SUBSECTION -->
+				<section anchor="resource-example-sec" title="Examples">
+
+				<t>satpres://quant/api.gateway1.com/swift</t>
+			
+				</section>
+
+				
+		</section>
+   		 <!-- END SUBSECTION -->
+   		 
+
+
+   		 <!-- SUBSECTION -->
+		<section anchor="clientresource-descriptor-sec" title="Digital Asset Resource Client Descriptors">
+
+		<t>Resources are identified by URN as described below:</t>
+		
+				<t><list style="symbols">
+					<t>The type is new: application/satpclient</t>
+				</list></t>
+
+		<t>The URN format does not imply availability of access protocol.</t>
+		
+		<t>Data included in the URN includes the following:</t>
+		
+   		 		<!-- SUB-SUBSECTION -->
+				<section anchor="client-org-id-sec" title="Organization Identifier">
+
+				<t> Legal Entity Identifier (LEI) or other identifier 
+				linking resource ownership to a real-world entity. 
+				Any scheme for identifying Gateway owners may be implemented 
+				(e.g. LEI directory, closed user group membership, BIC, etc.). </t> 
+
+ 				<t> The Gateway MAY validate the identity with the issuing authority. 
+ 				The identifier is not a trusted identity, 
+ 				but MAY be relied on where trust has been established 
+ 				between the two parties (e.g. in a closed user group). </t> 
+
+
+				</section>
+
+
+   		 		<!-- SUB-SUBSECTION -->
+				<section anchor="client-gateway-id-sec" title="Gateway / Endpoint ID">
+
+ 				<t> Applications which interact with multiple networks 
+ 				can operate in a mode whereby the application connects to its local gateway, 
+ 				which then forwards application traffic to local networks and 
+ 				to remote networks via other SATP gateways. </t> 
+
+				 <t> Where this is the case, this field identifies the "home" gateway 
+				 for this application. 
+				 This may be required to carry out gateway to gateway handshaking 
+				 and protocol negotiation, or for the server to look up use 
+				 case specific data relating to the client. </t> 
+
+
+				</section>
+
+
+   		 		<!-- SUB-SUBSECTION -->
+				<section anchor="client-org-unit-sec" title="Organizational Unit">
+
+ 				<t> The organization unit within the organization that the client 
+ 				(application or developer) belongs to. 
+ 				This assertion should be backed up with authentication via the negotiated protocol.</t> 
+
+ 				<t> The purpose of this field is to allow gateways to maintain access control 
+ 				mapping between applications and resources that are independent of the 
+ 				authentication and authorization schemes used, 
+ 				supporting future changes and supporting counterparties 
+ 				that operate different schemes. </t> 
+	
+				</section>
+
+
+				<section anchor="client-dlt-resource-sec" title="Name">
+
+				<t>A locally unique (within the OU) identifier, which can identify the application, 
+				project or individual developer responsible for this client connection. 
+				This is the most granular unit of access control, 
+				and gateways should ensure appropriate identifiers 
+				are used for the needs of the application or use case. </t>
+
+				</section>
+
+
+				<section anchor="client-resource-example-sec" title="Examples">
+
+				<t>satclient:quant/api.overledger.quant.com/research/luke.riley</t>
+				
+
+				</section>
+
+				
+		</section>
+   		 <!-- END SUBSECTION -->
+
+
+
+
+
+   		 <!-- SUBSECTION -->
+		<section anchor="gateway-access-sec" title="Gateway Level Access Control">
+
+		<t>Gateways can enforce access rules based on standard naming conventions using 
+		novel or existing mechanisms such as AuthZ protocols using 
+		the resource identifiers above, for example:</t>
+
+		<t>satpclient://hsbc/api.overledger.hsbc.com/lending/eric.devloper </t>
+		
+		<t>can READ/WRITE  </t>
+
+		<t>satpres://quant/api.gateway1.com/tradelens </t>
+
+		<t>AND</t>
+		
+		<t>satpres://quant/api.gateway1.com/ripple</t>
+
+		<t>These rules would allow a client so identified to access resources directly, for example:</t>
+
+		<t>satpres://quant/api.gateway1.com/tradelens/xxxxxADDRESSxxxxx</t>
+
+		<t>This method allows resource owners to easily grant access to individuals, 
+		groups and organizations. Individual gateway implementations may implement access controls, 
+		including subsetting and supersetting or applications or 
+		resources according to their own requirements.</t>
+			
+		</section>
+   		 <!-- END SUBSECTION -->
+
+
+
+   		 <!-- SUBSECTION -->
+		<section anchor="negotiation-sec" title="Negotiation of Security Protocols and Parameters">
+
+   		 		<!-- SUB-SUBSECTION -->
+				<section anchor="TLS-Established-sec" title="TLS Established">
+				<t>TLS 1.2 or higher MUST be implemented to protect gateway communications. 
+				TLS 1.3 or higher SHOULD be implemented where both 
+				gateways support TLS 1.3 or higher.</t>
+				</section>
+
+
+   		 		<!-- SUB-SUBSECTION -->
+				<section anchor="Client-offers-sec" title="Client offers supported credential schemes">
+
+				<t>Capability negotiation prior to data exchange, 
+				follows a scheme similar to the Session Description Protocol [RFC 5939]. 
+				Initially the client (application) sends a JSON block containing 
+				acceptable credential schemes, e.g. OAuth2.0, SAML in 
+				the "Credential Scheme" field of the SATP message.</t>
+
+
+				</section>
+
+
+   		 		<!-- SUB-SUBSECTION -->
+				<section anchor="server-selects-sec" title="Server selects supported credential scheme">
+
+				<t>The server (recipient Gateway) selects one acceptable credential scheme from 
+				the offered schemes, returning the selection in the "Credential Scheme" 
+				field of the SATP message.</t>
+
+				<t>If no acceptable credential scheme was offered, 
+				an HTPP 511 "Network Authentication Required" error 
+				is returned in the Action/Response field of the SATP message.</t>
+	
+				</section>
+
+
+   		 		<!-- SUB-SUBSECTION -->
+				<section anchor="client-procedure-sec" title="Client asserts or proves identity">
+
+				<t>The details of the assertion / verification step are specific to 
+				the chosen credential scheme and are out of scope of this document.</t>
+
+				</section>
+
+
+   		 		<!-- SUB-SUBSECTION -->
+				<section anchor="sequence-numbers-sec" title="Sequence numbers initialized">
+
+ 				<t> Sequence numbers are used to allow the server to 
+ 				correctly order operations from the client, 
+ 				some of which may be asynchronous, synchronous, 
+ 				idempotent with duplicate requests handled in 
+ 				different ways according to the use case. </t> 
+
+ 				<t> The initial sequence number is proposed by the client (sender gateway) 
+ 				after the finalization of credential verification. 
+ 				The server (recipient gateway) MUST respond with 
+ 				the same sequence number to indicate acceptance. </t> 
+
+ 				<t> The client (sender gateway) increments the sequence number 
+ 				with each new request. 
+ 				Sequence numbers can be reused for retries in the 
+ 				event of a gateway timeout. </t> 
+				
+				</section>
+
+
+
+   		 		<!-- SUB-SUBSECTION -->
+				<section anchor="msg-exchnge-sec" title="Messages can now be exchanged">
+
+ 				<t> Handshaking is complete at this point, 
+ 				and the client can send SAT messages to perform actions on resources, 
+ 				which MAY reference the SAT Payload field. </t> 
+
+				</section>
+
+		</section>
+
+
+		
+		<!-- SUBSECTION -->
+		<section anchor="asset-profile-nego" title="Asset Profile Identification">
+		
+		<t>The client and server must mutually agree as to the asset type or 
+		profile that is the subject to the current transfer from the client and server. 
+		The client must provide the server with the asset-identification number, 
+		or the server may provide the client with the asset-identification numbers 
+		for the digital asset supported by the server. </t>
+
+		<t>Formal specification of asset identification is out of scope of this document. 
+		Global numbering of digital asset types or profiles is expected to be 
+		performed by a legally recognized entity.</t>
+		
+		
+		</section>
+		<!-- END SUBSECTION -->
+
+
+
+
+		<!-- SUBSECTION -->
+		<section anchor="application-profile-nego" title="Application Profile Negotiation">
+		
+		<t>Where an application relies on specific extensions for operation, 
+		these can be represented in an Application Profile. </t>
+
+		<t>For example, a payments application tracks payments through the use of 
+		a cloud based API and will only interact with gateways that log messages to that API, 
+		a resource profile can be established:</t>
+
+		<t>Application Name: TRACKER</t>
+		<t>X-Tracker_URL: https://api.tracker.com/updates</t>
+		<t>X-Tracking-Policy: Always</t>
+
+		<t>As gateways implement this functionality, they support the TRACKER application profile, 
+		and the application is able to expand its reach by periodically polling 
+		for the availability of the profile.</t>
+
+		<t>This is an intentionally generalized extension mechanism for 
+		application or vendor specific functionality.</t>
+		
+		</section>
+		<!-- END SUBSECTION -->
+
+
+
+
+   		 <!-- SUBSECTION -->
+		<section anchor="resource-dsicovery-sec" title="Discovery of Digital Asset Resources">
+
+		<t>Applications located outside a network or system SHOULD be able 
+		to discover which resources they are authorized to access in a network or system.</t>
+
+		<t>Resource discovery is handled by the gateway in front of the network. 
+		For instance using a GET  request against the gateway 
+		URL with no resource identifier could return  
+		a list of URLs available to the requester. 
+		This list is  subject to the access controls above.</t>
+
+		<t>Gateways MAY allow applications to discover resources 
+		they do not have access to.  
+		This should be indicated in the free text field, 
+		and gateways SHOULD implement a process for applications to request access.</t>
+
+		<t>Formal specification of supported 
+		resource discovery methods is out of scope of this document.</t>
+
+
+		</section>
+		<!-- END SUBSECTION -->
+
+
+
+	</section>
+   	<!-- END SECTION XXXXX -->
+
+
+
+   		<!-- START SECTION -->
+   		<section anchor="Stage0-section" title="Identity and Asset Verification Flow (Stage 0)" >
+
+ 		<t> Prior to commencing the asset transfer from the sender gateway (client) 
+ 		to the recipient gateway (server), 
+ 		both gateways must perform a number of verifications steps. 
+ 		The types of information required by both the sender and recipient 
+ 		are use-case dependent and asset-type dependent. </t> 
+
+ 		<t>The verifications include, but not limited to, the following: </t>
+				<t><list style="symbols">
+				<t>Gateway identity mutual verification: 
+				This is the identity of the gateway at the protocol and network layer. 
+				This may include validating the X509 certificates of the gateways. </t>
+
+
+				<t>Gateway owner verification: 
+				This is the verification of the identity (e.g. LEI) of the owners of the gateways. </t>
+
+				<t>Gateway device and state validation: 
+				This is the device attestation evidence [RATS] 
+				that a gateway must collect and convey to each other, 
+				where a verifier is assumed to be available to decode, 
+				parse and appraise the evidence.  </t>
+
+				<t>Originator and beneficiary identity verification: 
+				This is the identity and public-key of the entity (originator) 
+				in the origin network seeking to transfer the asset to 
+				another entity (beneficiary) in the destination network. </t>
+				</list></t>
+				
+  		<t> These are considered out of scope in the current specifications, 
+  		and are assumed to have been successfully completed prior to 
+  		the commencement of the transfer initiation flow. </t> 
+   		</section>
+   		<!-- END SECTION -->
+
+
+   	
+
+   	<!-- START SECTION -->
+   	<section anchor="stage1-section" title="Transfer Initiation Flows (Stage 1)" >
+
+	<t> This section describes the SATP initialization phase, 
+	where a sender gateway interacts with a recipient gateway, proposing a session. </t> 
+
+ 	<t> For this, several artifacts need to be validated: 
+ 	asset profile, asset ownership evidence, identities, 
+ 	and logging-related operations (log profile, access control profile). </t> 
+
+ 	<t> In this phase, gateways implement the Transfer Initiation Flows endpoint. </t> 
+
+	<t> In the following, the sender gateway takes instructions from an application, 
+	while the recipient gateway may act on behalf of its applications. </t> 
+
+	<t> The flow follows a request-response model. 
+	The sender gateway makes a request (POST) to the Transfer Initiation endpoint 
+	at the recipient gateway. </t> 
+
+	<t> Gateways MUST support the use of the HTTP GET and POST methods 
+	defined in RFC 2616 [RFC2616] for the endpoint.</t> 
+
+	<t> Clients (sender gateway) MAY use the HTTP GET or POST methods to send messages 
+	in this phase to the server (recipient gateway). 
+	If using the HTTP GET method, the request parameters may be 
+	serialized using URI Query String Serialization. </t> 
+
+	<t> The client and server may be required to sign certain messages 
+	in order to provide standalone proof (for non-repudiation) 
+	independent of the secure channel between the client and server. 
+	This proof may be required for audit verifications (e.g. post-event). </t> 
+
+ 	<t> (NOTE: Flows occur over TLS. Nonces are not shown). </t> 	
+
+
+   	   		 <!-- SUBSECTION -->
+   			<section anchor="stage1-init-claims" title="Transfer Initialization Claims" >
+
+			<t> The set of artifacts needed to be agreed between the client (sender gateway)
+			and the server (reciopient gateway) is carried within the Transfer Initialization Claims (JSON).</t> 
+
+			<t> The Transfer Initialization Claims consists of the following:</t>
+
+
+			<t><list style="symbols">
+				<t>digital_asset_id:  This is the globally unique identifier for the digital asset
+				located in the origin network.</t>
+
+				<t>asset_profile_id:  This is the globally unique identifier for the asset-profile
+				definition (document) on which the digital asset was issued.</t>
+
+				<t>verified_originator_entity_id:  This is the identity data of the originator entity
+				(person or organization) in the origin network. 
+				This information must be verified by the sender gateway.</t>
+
+				<t>verified_beneficiary_entity_id:  This is the identity data of the beneficiary entity
+				(person or organization) in the destination network. 
+				This information must be verified by the receiver gateway.</t>
+
+				<t> originator_pubkey REQUIRED. This is the public key of the asset owner (originator) 
+				in the origin network or system. </t> 
+
+				<t> beneficiary_pubkey REQUIRED. This is the public key of the beneficiary 
+				in the destination network. </t> 
+
+				<t> sender_gateway_network_id REQUIRED. This is the identifier of the 
+				origin network or system behind the client. </t> 
+
+				<t> recipient_gateway_network_id REQUIRED. This is the identifier of the destination 
+				network or system behind the server. </t> 
+
+				<t> client_identity_pubkey REQUIRED. The public key of client who sent this message. </t> 
+
+				<t> server_identity_pubkey REQUIRED. The public key of server for whom this message is intended. </t> 
+
+
+				<t>sender_gateway_owner_id:  This is the identity information of the owner or operator
+				of the sender gateway.</t>
+
+				<t>receiver_gateway_owner_id:  This is the identity information of the owner or operator
+				of the recipient gateway.</t>
+
+
+				</list></t>
+				
+			
+
+			</section>
+   			<!-- END SUBSECTION -->
+
+
+			
+
+   	   		 <!-- SUBSECTION -->
+   			<section anchor="stage1-init-request" title="Initialization Request Message" >
+
+			<t> The purpose of this message is for the client to initiate an asset transfer. 
+			Depending on the proposal, multiple rounds of communication between 
+			the client and the server may occur. </t> 
+
+
+			<t> This message is sent from the client to the Transfer Initialization Endpoint
+			at the server. </t> 
+
+			<t>The parameters of this message consists of the following:</t>
+			
+			<t><list style="symbols">
+				<t>version REQUIRED: SAT protocol Version (major, minor).</t>
+
+				<t>message_type REQUIRED:  urn:ietf:satp:msgtype:init-request-msg.</t>  
+				
+				<t>session_id  REQUIRED: A unique identifier (UUIDv2) chosen by the 
+				client to identify the current session. </t>   
+
+				<t>transferContext_id OPTIONAL: An optional identifier (UUIDv2) used to identify 
+				the current transfer session at the application layer.</t> 
+
+				<t>transfer_init_claims: The set of artifacts and parameters as the basis
+				for the current transfer.</t> 
+
+				 <t>transfer_init_claims_format OPTIONAL: The format of the transfer initialization claims.</t> 
+				
+				<t>developer_URN OPTIONAL: Assertion of developer / application identity.</t> 
+
+				<t>credential_profile REQUIRED: Specify type of auth (e.g.	SAML, OAuth, X.509).</t> 
+
+				<t>payload_profile REQUIRED: Asset Profile provenance and capabilities.</t> 
+
+				<t>application_profile OPTIONAL: Vendor or Application specific profile.</t> 
+
+				<t> logging_profile REQUIRED: contains the profile regarding the logging procedure. 
+				Default is local store.</t> 
+
+				<t> access_control_profile REQUIRED: the profile regarding the confidentiality 
+				of the log entries being stored. 
+				Default is only the gateway that created the logs can access them.</t> 
+
+				<t> client_identity_pubkey REQUIRED. The public key of client who sent this message. </t> 
+
+				<t> server_identity_pubkey REQUIRED. The public key of server for whom this message is intended. </t> 
+
+
+				<t> Lock_type REQUIRED: faucet, timelock, hashlock, hashtimelock, multi-claim PC, 
+				destroy/burn (escrowed cross-claim).</t> 
+
+				<t> Lock_expiration_time REQUIRED: when will the lock or escrow expire</t> 
+
+				<t> Multiple claims allowed OPTIONAL: true/false.</t> 
+ 
+				<t> Multiple cancels allowed OPTIONAL: true/false.</t> 
+
+				<t> Permissions OPTIONAL: list of identities (public-keys or X.509 certificates) 
+				that can perform operations on the escrow or lock 
+				on the asset in the origin network.</t> 
+
+			
+				<t> Subsequent calls OPTIONAL: details possible escrow actions.</t> 
+
+				<t> History OPTIONAL: provides an history of the escrow, 
+				in case it has previously been initialized.</t> 
+
+				<t>signature REQUIRED: The client's EDCSA signature over the message.</t> 
+
+				</list></t>
+				
+				<t>Example:</t>
+
+
+				<figure align="center" anchor="initialization-request-example">
+					<artwork><![CDATA[                                         
+					
+			   POST /initialization-request HTTP/1.1
+				 Host: server.example.com
+				 Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+				 Content-Type: application/x-www-form-urlencoded
+			
+					 {
+					 "version": "1.0",
+					 "message_type": "urn:ietf:satp:msgtype:initialization-request-msg",
+					 "session_id":"3c7e8d28-15e7-11ec-82a8-0242ac130003",
+					 "developer_urn":"com.example.app",
+					 "credential_profile":"X.509",
+					 "payload_profile":"asset_profile 3c7e8d28",
+					 "application_profile":"vendor_profile 3c7e8d23",
+					 "logging_profile":"local_store",
+					 "access_control_profile":"gateway_only",
+					 "initialization_request_message_signature":"30440220452242b3d148b5ca6b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1dc6e1f4c4e4b5fe91b5f6d5f6eb1d",
+					 "sender_gateway_pubkey":"MCowBQYDK2VwAyEA1UKvRcYgSP0UJxTcMOMT+TQZJ0At+a34S9XrtJj+Lo0=",
+					 "sender_gateway_network_id":"12345",
+					 "recipient_gateway_pubkey":"MCowBQYDK2VwAyEAbCFL39i/9XNpW1+tpaAYFwexHRSANxhUJZ1UoeZ6lHs=",
+					 "recipient_gateway_network_id":"54321",
+					 "lock_type": "timelock",
+					 "lock_expiration_type": "3600",
+					 "multiple_claims": "true",
+					 "multiple_cancels": "true",
+					 "permissions": [  "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE3MwIUR5r5r7BRXzZStuL7V46ODhJ",  "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE3MwIUR5r5r7BRXzZ"]",
+					 "originator": "Org1MSP",
+					 "beneficiary": "0x20790e28316C429a2c0411e7F14Caf6B053a77Ae",
+					 "subsequent_calls": "none",
+					 "history": "none",
+					 }
+			
+					]]></artwork>
+					  </figure>
+							
+
+
+			</section>
+   			<!-- END SUBSECTION -->
+
+
+
+   	   		 <!-- SUBSECTION -->
+   			<section anchor="stage1-init-request-response" title="Initialization Response Message" >
+
+
+			<t> After receiving an Initialization Request Message, 
+			the server needs to validate the profiles. </t> 
+
+			<t> This validation could be performed automatically (using a defined set of rules), 
+			or by requiring approval by an application. </t> 
+
+			<t> If one of the profiles is rejected, 
+			the server constructs a Initialization Denied Message, 
+			stating what was rejected, and proposing an alternative (if applicable). </t> 
+
+			<t> Otherwise, if approved, the server constructs an
+			Initialization Response Message.
+			This message is sent from the server to the Initialization Response Endpoint at the client.</t> 
+
+			<t> The purpose of this message is for the server
+			to indicate agreement to proceed with the proposed operations, 
+			under the proposed profiles. </t> 
+
+			<t> The message must be signed by the server. </t> 
+
+			<t>The parameters of this message consists of the following:</t>
+				<t><list style="symbols">
+				<t>version REQUIRED: SAT protocol Version (major, minor).</t>
+
+				<t>message_type REQUIRED:  urn:ietf:satp:msgtype:init-response-msg</t>  
+
+				<t>session_id  REQUIRED: A unique identifier (UUIDv2) chosen by the 
+				client to identify the current session. </t>   
+
+				<t>transferContext_id OPTIONAL: An optional identifier (UUIDv2) used to identify 
+				the current transfer session at the application layer. </t>  
+
+				<t>hash_transfer_init_claims REQUIRED: Hash of the Transfer Initialization Claims
+				received in the Initialization Request Message. </t> 
+
+				<t> timestamp REQUIRED: timestamp referring to when 
+				the Initialization Request Message was received. </t> 
+
+				</list></t>
+
+				<t>Example:</t>
+
+		<figure align="center" anchor="initialization-request-response-example">
+		<artwork><![CDATA[                                         
+        
+   POST /initialization-request HTTP/1.1
+     Host: server.example.com
+     Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+     Content-Type: application/x-www-form-urlencoded
+	 {
+		"message_type": "urn:ietf:satp:msgtype:initialization-request-response-msg",
+		"session_id": "3c7e8d28-15e7-11ec-82a8-0242ac130003",
+		"sequence_number": 1,
+		"hash_initialization_request_message": "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12",
+		"destination": "0x20790e28316C429a2c0411e7F14Caf6B053a77Ae",
+		"timestamp": "2023-04-11T10:00:00Z",
+		"processed_timestamp": "2023-04-11T10:01:30Z"
+	  }
+	  
+
+		]]></artwork>
+      	</figure>
+
+
+			</section>
+   			<!-- END SUBSECTION -->
+
+	
+	</section>
+   	<!-- END SECTION -->
+
+
+
+
+
+
+
+   	<!-- START SECTION -->
+   	<section anchor="stage2-section" title="Transfer Commencement and Lock Assertion (Stage 2)" >
+
+	<t>The messages in this stage begin with  the sender gateway and receiver gateway agreeing 
+	to formally commence with the unidirectional transfer of the asset. </t>
+
+	<t>The commencement message include the Transfer Initialization Claims
+	that was agreed upon between the sender gateway and receiver gateway in the previois stage.</t>
+
+	<t> In the following, the sender gateway takes the role of the client 
+	while the recipient gateway takes the role of the server. </t> 
+
+	<t> The flow follows a request-response model. 
+	The client makes a request (POST) to the Lock-Assertion Endpoint at the server. </t> 
+
+	<t> Gateways MUST support the use of the HTTP GET and POST methods 
+	defined in RFC 2616 [RFC2616] for the endpoint. </t> 
+
+	<t> Clients MAY use the HTTP GET or POST methods to send messages in this phase to the server. 
+	If using the HTTP GET method, the request parameters may be serialized 
+	using URI Query String Serialization. </t> 
+
+ 	<t> (NOTE: Flows occur over TLS. Nonces are not shown). </t> 
+
+
+
+   		 <!-- SUBSECTION -->
+		<section anchor="transfer-commence-sec" title="Transfer Commence Message ">
+
+
+		<t> The purpose of this message is for the client to signal to
+		the server that the client is ready to start the transfer of the
+		digital asset. This message must be signed by the client.</t> 
+
+		<t>This message is sent by the client to the Transfer Commence Endpoint at the server.</t> 
+
+		<t>The message must carry the asset_transfer initialization claims 
+		agreed upon in the previous stage between the client and the server. </t>
+
+
+		<t>The parameters of this message consists of the following:</t>
+			<t><list style="symbols">
+
+			<t>message_type REQUIRED. MUST be the value urn:ietf:satp:msgtype:transfer-commence-msg.</t>
+
+			<t>session_id REQUIRED: A unique identifier (UUIDv2) chosen earlier 
+			by client in the Initialization Request Message.</t> 
+
+			<t>transferContext_id OPTIONAL: An optional identifier (UUIDv2) 
+			used to identify the current transfer session at the application layer.</t> 
+
+ 			<t>client_identity_pubkey REQUIRED. The public key of client who sent this message. </t> 
+
+ 			<t>server_identity_pubkey REQUIRED. The public key of server for whom this message is intended. </t> 
+
+ 			<t>hash_transfer_init_claims REQUIRED: Hash of the Transfer Initialization Claims
+ 			received in the Initialization Request Message. </t> 
+
+ 			<t>hash_prev_message REQUIRED. The hash of the last message. </t> 
+
+ 			<t>client_transfer_number OPTIONAL. This is the transfer identification number 
+ 			chosen by the client. This number is meaningful only the client. </t> 
+
+			<t>client_signature REQUIRED. The digital signature of the client.</t>
+
+			<t>max_timeout OPTIONAL. The maximum timeout for a lock to be performed by the origin gateway. Defaults to 100 seconds.</t>
+			</list></t>
+
+		<t>For example, the client makes the following HTTP request using TLS
+		(with extra line breaks for display purposes only):</t>
+
+		<figure align="center" anchor="transfer-commence-sec-example">
+		<artwork><![CDATA[                                         
+        
+   POST /transfer-commence HTTP/1.1
+     Host: server.example.com
+     Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+     Content-Type: application/x-www-form-urlencoded
+
+         {
+         "message_type": "urn:ietf:satp:msgtype:transfer-commence-msg",
+         "session_id":"9097hkstgkjvVbNH",
+         "originator_pubkey":"zGy89097hkbfgkjvVbNH",
+         "beneficiary_pubkey": "mBGHJjjuijh67yghb",
+         "sender_net_system": "originNETsystem",
+         "recipient_net_system":"recipientNETsystem",
+         "client_identity_pubkey":"fgH654tgeryuryuy",
+         "server_identity_pubkey":"dFgdfgdfgt43tetr535teyrfge4t54334",
+         "transfer_init_claims":"nbvcwertyhgfdsertyhgf2h3v4bd3v21",
+         "hash_prev_message":"DRvfrb654vgreDerverv654nhRbvder4",
+         "client_transfer_number":"ji9876543ewdfgh",
+         "client_signature":"fdw34567uyhgfer45"
+         }
+
+		]]></artwork>
+      	</figure>
+
+		</section>
+   		<!-- END SUBSECTION -->
+
+
+
+
+   		 <!-- SUBSECTION -->
+		<section anchor="transfer-commence-resp-sec" title="Commence Response Message (ACK-Commence)">
+
+
+ 		<t> The purpose of this message is for the server to indicate agreement 
+ 		to proceed with the asset transfer, based on the artifacts
+ 		found in the previous Transfer Initialization Claims. </t> 
+
+		<t>This message is sent by the server to the Commence Response Endpoint at the client.</t> 
+
+		<t> The message must be signed by the server. </t> 
+
+		<t>The parameters of this message consists of the following:</t>
+			<t><list style="symbols">
+
+ 			<t> message_type REQUIRED urn:ietf:satp:msgtype:ack-commence-msg</t> 
+ 			
+			<t>session_id REQUIRED: A unique identifier (UUIDv2) chosen earlier 
+			by client in the Initialization Request Message.</t> 
+
+			<t>transferContext_id OPTIONAL: An optional identifier (UUIDv2) 
+			used to identify the current transfer session at the application layer.</t> 
+			
+			 <t>client_identity_pubkey REQUIRED. The client for whom this message is intended. </t> 
+
+ 			<t>server_identity_pubkey REQUIRED. The server who sent this message. </t> 
+
+ 			<t>hash_prev_message REQUIRED.  The hash of the last message. </t> 
+
+ 			<t> server_transfer_number OPTIONAL. This is the transfer identification number 
+ 			chosen by the server. This number is meaningful only to the server. </t> 
+
+			<t>server_signature REQUIRED. The digital signature of the server. </t>
+
+			<t>max_timeout OPTIONAL. The maximum timeout for a lock to be performed by the origin gateway. Defaults to 100 seconds.</t>
+
+			</list></t>
+
+		<t>An example of a success response could be as follows: (TBD)</t>
+
+		<figure align="center" anchor="transfer-commence-resp-sec-example">
+		<artwork><![CDATA[                                         
+        
+		POST /transfer-commence-sec HTTP/1.1
+		Host: client.example2.com
+		Authorization: Basic ZGVtbzpwQDU1dzByZA==
+		Content-Type: application/x-www-form-urlencoded
+
+		{
+			"message_type": "urn:ietf:satp:msgtype:ack-commence-msg",
+			"session_id":"23hgbn34hgbn34",
+			"transferContext_id":"8742bnm23bnm23",
+			"client_identity_pubkey":"n23bn4gfnb23g4b",
+			"server_identity_pubkey":"9j23g4j23bn4j2b",
+			"hash_prev_message":"1n23gb4jn23g4",
+			"server_transfer_number":"a3bn23bnj23g4",
+			"server_signature":"v23gb23gbn23gb",
+			"max_timeout":"120"
+		}
+
+
+		]]></artwork>
+      	</figure>
+		</section>
+   		<!-- END SUBSECTION -->
+
+
+
+   		 <!-- SUBSECTION -->
+		<section anchor="lock-assertion-message-sec" title="Lock Assertion Message">
+
+
+		<t>The purpose of this message is for the client (sender gateway) to
+		   convey a signed claim to the server (receiver gateway) declaring that the asset in
+		   question has been locked or escrowed by the client in the origin
+		   network (e.g. to prevent double spending).</t> 
+
+ 		<t> The format of the claim is dependent on the network or system 
+ 		of the client and is outside the scope of this specification. </t> 
+
+ 		<t> This message is sent from the client to the Lock Assertion Endpoint at the server. </t> 
+
+ 		<t> The server must validate the claims (payload)
+ 		in this message prior to the next step. </t> 
+
+		<t>The message must be signed by the client.</t>
+
+
+
+		<t>The parameters of this message consists of the following:</t>
+			<t><list style="symbols">
+
+			<t>message_type REQUIRED urn:ietf:satp:msgtype:lock-assert-msg. </t>
+
+			<t>session_id REQUIRED: A unique identifier (UUIDv2) chosen earlier 
+			by client in the Initialization Request Message.</t> 
+
+			<t>transferContext_id OPTIONAL: An optional identifier (UUIDv2) 
+			used to identify the current transfer session at the application layer.</t> 
+			
+			<t>client_identity_pubkey REQUIRED. The client who sent this message. </t> 
+
+ 			<t>server_identity_pubkey REQUIRED. The server for whom this message is intended. </t> 
+
+ 			<t>lock_assertion_claim REQUIRED. The lock assertion claim or statement by the client. </t> 
+
+ 			<t>lock_assertion_claim_format REQUIRED. The format of the claim. </t> 
+		
+ 			<t>lock_assertion_expiration REQUIRED.  The duration of time of the lock or escrow upon the asset.</t> 
+
+ 			<t>hash_prev_message REQUIRED. The hash of the previous message. </t> 
+
+ 			<t>client_transfer_number OPTIONAL. This is the 
+ 			transfer identification number chosen by the client. 
+ 			This number is meaningful only to the client. </t> 
+
+			<t>client_signature REQUIRED. The digital signature of the client. </t>
+
+			</list></t><t>Example:</t>
+
+			<figure align="center" anchor="lock-assert-message-sec">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /lock-assert-sec HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+		
+			{
+				"message_type": "urn:ietf:satp:msgtype:lock-assert-msg",
+				"session_id": "f99636a9-9f3b-4f46-aa2e-2d3c7b277f19",
+				"client_identity_pubkey": "sha256:abc123",
+				"server_identity_pubkey": "sha256:def456",
+				"lock_assertion_claims": {
+					"asset_id": "1234567890",
+					"lock_type": "exclusive",
+					"locked_by": "Alice"
+				},
+				"lock_assertion_format": "JWT",
+				"lock_assertion_expiration": "PT1H",
+				"hash_prev_message": "sha256:fedcba9876543210",
+				"client_transfer_number": 42,
+				"client_signature": "sha256:0123456789abcdef"
+			}
+			
+			
+				]]></artwork>
+				  </figure>
+		
+		</section>
+   		<!-- END SUBSECTION -->
+
+
+		  <!-- SUBSECTION -->
+		<section anchor="lock-assertion-receipt-section" title="Lock Assertion Receipt Message (Assertion-Receipt)">
+
+		<t>The purpose of this message is for the server (receiver gateway) 
+		to indicate acceptance of the claim(s) in the lock-assertion message 
+		delivered by the client (sender gateway) in the previous message.</t>
+
+		<t>This message is sent from the server to the Assertion Receipt Endpoint
+		at the client.</t>
+
+
+		<t>The message must be signed by the server.</t>
+
+		<t>The parameters of this message consists of the following:</t>
+			<t><list style="symbols">
+
+			<t>message_type REQUIRED urn:ietf:satp:msgtype:assertion-receipt-msg.</t>
+
+			<t>session_id REQUIRED: A unique identifier (UUIDv2) chosen earlier 
+			by client in the Initialization Request Message.</t> 
+
+			<t>transferContext_id OPTIONAL: An optional identifier (UUIDv2) 
+			used to identify the current transfer session at the application layer.</t> 
+
+			<t>client_identity_pubkey REQUIRED. The client for whom this message is intended. </t>
+
+			<t>server_identity_pubkey REQUIRED. The server who sent this message. </t>
+
+			<t>hash_prev_message REQUIRED. The hash of previous message. </t>
+
+			<t>server_transfer_number OPTIONAL. This is the transfer identification number chosen by the server. 
+			This number is meaningful only to the server. </t>
+
+			<t>server_signature REQUIRED. The digital signature of the server. </t>
+
+			</list></t>			
+			<t>Example:</t>
+
+			<figure align="center" anchor="lock-assert-message-sec-resp">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /lock-assert-sec HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+		
+			{
+				"message_type": "urn:ietf:satp:msgtype:lock-assert-receipt-msg",
+				"session_id": "1925d5de-9361-4a5b-bfb5-31a1d496df13",
+				"client_identity_pubkey": "BwuQxKjbsgAKmt1/7v1JtxlCf55dP8oGzLZTkUwyI6U=",
+				"server_identity_pubkey": "89LH/cz2Q7LRRugThgXZTsiu0S6CPx7Vq8/kJP2cb7o=",
+				"hash_prev_message": "8d6ec9f178ef51d3a1b7f3fc3e2fc7a18e4d4ebd8c6f9ad7667d1f53dbbc6e09",
+				"server_transfer_number": 123456,
+				"server_signature": "ZThkNjk1ZjA2OTQ0MTA5MDM1ZTAwMjZhNmM5NTBkMzBjZGJlMzliZmM5MTkzODRmNjk0MTk5ZjJmZmNhN2Q0MA=="
+			  }
+			  
+			
+				]]></artwork>
+				  </figure>
+		
+		</section>
+   		<!-- END SUBSECTION -->
+
+		
+	</section>
+   	<!-- END SECTION -->
+
+
+
+
+   	<!-- START SECTION -->
+   	<section anchor="phase3-sec" title="Commitment Preparation and Finalization  (Stage 3)" >
+
+	<t>This section describes the transfer commitment agreement between the
+	client (sender gateway) and the server (receiver gateway).</t>
+
+	<t>This phase must be completed within the time specified 
+	in the lock_assertion_expiration value in the lock-assertion message. </t>
+
+	<t>In the following, the sender gateway takes the role of the client 
+	while the recipient gateway takes the role of the server. </t>
+
+	<t>The flow follows a request-response model. 
+	The client makes a request (POST) to the Transfer Commitment endpoint at the server. </t>
+
+	<t>Gateways MUST support the use of the HTTP GET and POST methods 
+	defined in RFC 2616 [RFC2616] for the endpoint. </t>
+  
+	<t>Clients MAY use the HTTP GET or POST methods to send messages in this phase to the server. 
+	If using the HTTP GET method, the request parameters maybe serialized 
+	using URI Query String Serialization. </t>
+
+	<t>The client and server may be required to sign certain messages 
+	in order to provide standalone proof (for non-repudiation) independent of the 
+	secure channel between the client and server.
+	This proof maybe required for audit verifications post-event. </t>
+
+	<t>(NOTE: Flows occur over TLS. Nonces are not shown). </t>
+
+
+
+
+		<!-- SUBSECTION -->
+		<section anchor="commit-preparation-message-sec" title="Commit Preparation Message (Commit-Prepare)">
+
+		<t>The purpose of this message is for the client to indicate 
+		its readiness to begin the commitment of the transfer.</t>
+
+		<t>This message is sent from the client to the Commit Prepare Endpoint at the server.</t>
+
+
+		<t>The message must be signed by the client.</t>
+
+
+		<t>The parameters of this message consists of the following:</t>
+			<t><list style="symbols">
+
+			<t>message_type REQUIRED. It MUST be the value urn:ietf:satp:msgtype:commit-prepare-msg </t>
+
+			<t>session_id REQUIRED: A unique identifier (UUIDv2) chosen earlier 
+			by client in the Initialization Request Message.</t> 
+
+			<t>transferContext_id OPTIONAL: An optional identifier (UUIDv2) 
+			used to identify the current transfer session at the application layer.</t> 
+
+			<t>client_identity_pubkey REQUIRED. The client who sent this message.</t>
+
+			<t>server_identity_pubkey REQUIRED. The server for whom this message is intended.</t>
+
+			<t>hash_prev_message REQUIRED. The hash of previous message. </t>
+
+			<t>client_transfer_number OPTIONAL.
+			This is the transfer identification number chosen by the client.	
+			This number is meaningful only the client. </t>
+
+			<t>client_signature REQUIRED. The digital signature of the client.</t>
+
+			</list></t>
+						<t>Example:</t>
+
+			<figure align="center" anchor="commit-preparation-message">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /commit-preparation HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+		
+			{
+				"message_type": "urn:ietf:satp:msgtype:commit-prepare-msg",
+				"session_id": "0a870f2a-9120-42b2-9d9a-97d7ce76f8e8",
+				"client_identity_pubkey": "0x049c8e24bf7d8139d15a6e785c4df4a4a4ce4e18f37be22c5728e654b583c70d9351d5077baf6f5de5fc5e6e3a3a2880b55a9688d3611d0f928818c4e4a8514d4",
+				"server_identity_pubkey": "0x048b15f0d9c2e580d3c3305f5d5f16d5a16169f09f7e0e28464b26a3d3e074b04a7b84e3100d7e2b1d97379910e54e1f9e277717f9a309c87aa06f8a8b7471d26",
+				"hash_prev_message": "e8f9f568c17aef67e283c7b55f82f068d556dc0ef82b773ce7ba0da49f9c0fb3",
+				"client_transfer_number": 123456,
+				"client_signature": "0x040f49b53e8d9c9fb2d1dcf5c5ba5d6e5d3f3a6a99f6b8e9d73e6a82b506f42b0c7b15f9f65c423d01ba40b4c0b557de19386d29d5ba1704c4dc4d739e01b1df4"
+			  }
+			  
+			  
+			
+				]]></artwork>
+				  </figure>
+		
+		</section>
+   		<!-- END SUBSECTION -->
+
+
+
+
+		<!-- SUBSECTION -->
+		<section anchor="commit-preparation-sck-section" title="Commit Preparation Acknowledgement Message (ACK-Prepare)">
+
+		<t>The purpose of this message is for the server to indicate to the client 
+		its readiness to proceed with the commitment finalization step.</t>
+
+		<t>This message is sent from the server to the Commit Prepare Acknowledgment Endpoint at the client.</t>
+		
+		<t>The message must be signed by the server.</t>
+
+
+		<t>The parameters of this message consists of the following:</t>
+			<t><list style="symbols">
+
+			<t>message_type REQUIRED. It MUST be the value urn:ietf:satp:msgtype:ack-prepare-msg. </t>
+
+			<t>session_id REQUIRED: A unique identifier (UUIDv2) chosen earlier 
+			by client in the Initialization Request Message.</t> 
+
+			<t>transferContext_id OPTIONAL: An optional identifier (UUIDv2) 
+			used to identify the current transfer session at the application layer.</t> 
+
+			<t>client_identity_pubkey REQUIRED. The client for whom this message is intended.</t>
+
+			<t>server_identity_pubkey REQUIRED. The server who sent this message.</t>
+
+			<t>hash_prev_message REQUIRED. The hash of previous message. </t>
+
+			<t>server_transfer_number OPTIONAL.	
+			This is the transfer identification number chosen by the server.	
+			This number is meaningful only the server.</t>
+
+			<t>server_signature REQUIRED. The digital signature of the server.</t>
+
+			</list></t>
+						<t>Example:</t>
+			
+			<figure align="center" anchor="commit-preparation-ack">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /commit-preparation HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+		
+			{
+				"message_type": "urn:ietf:satp:msgtype:commit-prepare-ack",
+				"session_id": "2a2f58e0-3e3b-11ec-8d3d-0242ac130003",
+				"client_identity_pubkey": "c25a43a415e36182ab78c17aaf148c52d5ee2dd5c1ac9db1a06dfc2565b5e5f5",
+				"server_identity_pubkey": "ae16f0a9c4509b2d2c1f3ca3e3e5228c2e2af58b7a3a3a18130153faffd90483",
+				"hash_prev_message": "f23cf19b77f6c4d4a4d6c9f9d0eb22e3257a2a2a1f7d227d634237a57a68a9a9",
+				"server_transfer_number": 123456,
+				"server_signature": "304402206eeb026d00725d5b9c9a5de51cbe1d2d2f96b8ebca05e3f0a6c7122f3c8f3bc02201e68ef0b28a6f23a44e0edf4d7c4aa1d37e7cbbad4ec67c7f47f39185753f7d2"
+			}
+
+				]]></artwork>
+				  </figure>
+		
+		</section>
+   		<!-- END SUBSECTION -->
+
+
+
+
+		<!-- SUBSECTION -->
+		<section anchor="commit-ready-section" title="Commit Ready Message (Commit-Ready)">
+
+		<t>The purpose The purpose of this message is for the server to indicate to the client that: 
+		(i) the server has created (minted) an equivalent asset in the destination 
+		network;
+		(ii) that the newly minted asset has been self-assigned to the server;
+		and (iii) that the server is ready to proceed to the next step.</t>
+
+		<t>This message is sent from the server to the Commit Ready Endpoint at the client.</t>
+   
+		<t>The message must be signed by the server.</t>
+
+
+		<t>The parameters of this message consists of the following:</t>
+			<t><list style="symbols">
+
+			<t>message_type REQUIRED. It MUST be the value urn:ietf:satp:msgtype:commit-ready-msg. </t>
+
+			<t>session_id REQUIRED: A unique identifier (UUIDv2) chosen earlier 
+			by client in the Initialization Request Message.</t> 
+
+			<t>transferContext_id OPTIONAL: An optional identifier (UUIDv2) 
+			used to identify the current transfer session at the application layer.</t> 
+
+			<t>client_identity_pubkey REQUIRED. The client for whom this message is intended.</t>
+
+			<t>server_identity_pubkey REQUIRED. The server who sent this message.</t>
+
+			<t>mint_assertion_claims REQUIRED. The mint assertion claim or statement by the server. </t> 
+			
+			<t>mint_assertion_format OPTIONAL.  The format of the assertion payload. </t>
+
+			<t>hash_prev_message REQUIRED. The hash of previous message. </t>
+
+			<t>server_transfer_number OPTIONAL.	
+			This is the transfer identification number chosen by the server.	
+			This number is meaningful only the server.</t>
+
+			<t>server_signature REQUIRED. The digital signature of the server.</t>
+
+			</list></t>
+<t>Example:</t>
+			
+			<figure align="center" anchor="commit-ready">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /commit-ready HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+			{
+				"message_type": "urn:ietf:satp:msgtype:commit-ready-msg",
+				"session_id": "05e45a0b-23e2-4bdc-a06a-7cc2bb06d46b",
+				"client_identity_pubkey": "047b0a72e30c4ef54e4b4a854b4aa3b9479c2f01f452e7e8b1213a3c1d2f24db",
+				"server_identity_pubkey": "043e05eb5cf5b599f8b1d38f7c33d27e045df7ab8f909d0b7e58f973e12f5841a2",
+				"mint_assertion_claims": {
+					"asset_id": "23fe5548-8318-4c11-9bc9-c2b50e3e3d98",
+					"amount": 1000,
+					"currency": "USD",
+					"expiration": "2024-04-11T12:00:00Z"
+				},
+				"mint_assertion_format": "JWT",
+				"hash_prev_message": "5b20751c57c93810c2a1eb7c1026bdfed3095518f6c90f6c069d5edbe51c57f8",
+				"server_transfer_number": 12345,
+				"server_signature": "MEYCIQC6PnmvL5ZamW8ZzSn5IyoV0r2QShzwbiYq3oKmH9XGXQIhALcOpWq3TxHwLJnSxNAYdGGEr70FCXy7CYUM+FYAgOt"
+			}
+			
+
+				]]></artwork>
+				  </figure>
+		
+		</section>
+   		<!-- END SUBSECTION -->
+
+
+
+
+
+
+
+
+		<!-- SUBSECTION -->
+		<section anchor="commit-final-message-section" title="Commit Final Assertion Message (Commit-Final)">
+
+
+ 		<t> The purpose of this message is for the client to indicate to the server 
+ 		that the client (sender gateway) has completed the extinguishment (burn) 
+ 		of the asset in the origin network. </t> 
+
+		<t>The message must contain standalone claims related 
+		to the extinguishment of the asset by the client. 
+		The standalone claim must be signed by the client.</t>
+
+   		<t>This message is sent from the client to the Commit Final Assertion Endpoint at the server.</t>
+
+   		<t>The message must be signed by the server.</t>
+
+		<t>The parameters of this message consists of the following:</t>
+			<t><list style="symbols">
+
+			<t>message_type REQUIRED. It MUST be the value urn:ietf:satp:msgtype:commit-final-msg.</t>
+
+			<t>session_id REQUIRED: A unique identifier (UUIDv2) chosen earlier 
+			by client in the Initialization Request Message.</t> 
+
+			<t>transferContext_id OPTIONAL: An optional identifier (UUIDv2) 
+			used to identify the current transfer session at the application layer.</t> 
+
+			<t>client_identity_pubkey REQUIRED. The client who sent this message.</t>
+
+			<t>server_identity_pubkey REQUIRED. The server for whom this message is intended.</t>
+
+			<t>burn_assertion_claim REQUIRED. The burn assertion signed claim or statement by the client. </t> 
+			
+			<t>burn_assertion_claim_format OPTIONAL.  The format of the claim. </t>
+
+			<t>hash_prev_message REQUIRED. The hash of previous message. </t>
+
+			<t>client_transfer_number OPTIONAL.	
+			This is the transfer identification number chosen by the client.	
+			This number is meaningful only the client.</t>
+
+			<t>client_signature REQUIRED. The digital signature of the client.</t>
+
+			</list></t>
+						<t>Example:</t>
+			
+			<figure align="center" anchor="commit-final">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /commit-final HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+			{
+				"message_type": "urn:ietf:satp:msgtype:commit-final-msg",
+				"session_id": "369485e0-7c1e-11eb-9439-0242ac130002",
+				"client_identity_pubkey": "0x7a6c0b28a7b6c727d6d10fb6abbe8704c12f6ad9",
+				"server_identity_pubkey": "0x49f0d1bdeef38b1e51b2a366e02a9a46390df3d6",
+				"burn_assertion_claims": "0x3558437622216ccd682d0ed1cc0fed67745a7a5974d6f5924041007e5556a865",
+				"burn_assertion_format": "txhash",
+				"hash_prev_message": "f02c30c7-d728-4bc4-9d4e-ee4f0e775d38",
+				"client_transfer_number": 123456,
+				"client_signature": "0xabcd1234"
+			}
+			
+
+				]]></artwork>
+				  </figure>
+
+
+		</section>
+   		<!-- END SUBSECTION -->
+
+
+
+
+		<!-- SUBSECTION -->
+		<section anchor="commit-final-ack-section" title="Commit-Final Acknowledgement Message (ACK-Final)">
+
+		<t>The purpose of this message is to indicate to the client that the server has 
+		completed the assignment of the newly minted asset to 
+		the intended beneficiary at the destination network.</t>
+
+   		<t>This message is sent from the server to the Commit Final Receipt Endpoint at the client.</t>
+
+   		<t>The message must be signed by the server.</t>
+
+		<t>The parameters of this message consists of the following:</t>
+			<t><list style="symbols">
+
+			<t>message_type REQUIRED. It MUST be the value urn:ietf:satp:msgtype:ack-commit-final-msg. </t>
+
+			<t>session_id REQUIRED: A unique identifier (UUIDv2) chosen earlier 
+			by client in the Initialization Request Message.</t> 
+
+			<t>transferContext_id OPTIONAL: An optional identifier (UUIDv2) 
+			used to identify the current transfer session at the application layer.</t> 
+
+			<t>client_identity_pubkey REQUIRED. The client for whom this message is intended..</t>
+
+			<t>server_identity_pubkey REQUIRED. The server who sent this message.</t>
+
+			<t>assignment_assertion_claim REQUIRED. The claim or statement by the server
+			that the asset has been assigned by the server to the intended beneficiary. </t> 
+			
+			<t>assignment_assertion_claim_format OPTIONAL.  The format of the claim. </t>
+
+			<t>hash_prev_message REQUIRED. The hash of previous message. </t>
+
+			<t>server_transfer_number OPTIONAL.
+			This is the transfer identification number chosen by the server.	
+			This number is meaningful only the server.</t>
+
+			<t>server_signature REQUIRED. The digital signature of the server.</t>
+
+			</list></t>
+						<t>Example:</t>
+			
+			<figure align="center" anchor="ack-commit-final">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /commit-final HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+			{
+				"message_type": "urn:ietf:satp:msgtype:ack-commit-final-msg",
+				"session_id": "c011ab1e-1337-1337-1337-2468aceface0",
+				"client_identity_pubkey": "0x04a3d344f3c3b56e672aa9540a7df0f6b2d6fb90a6a401c03db36d6b9a9bfe5ab5aa2ce5e2354ee4fc042fb4ad0b188aef15393d70cb1ce8e037bc0a225c04db2",
+				"server_identity_pubkey": "0x04f547a1a31a2672b9f8936e22e16a51cb3b3ec8aafcd443bc1c7db38d1b292bf9e21b15987797c9900f534e1403f3ccba3a3c0e7d541b41c1a8a516a56c20001",
+				"assignment_assertion_claims": {
+				  "asset_id": "abc123",
+				  "beneficiary": "0x6789abc...",
+				  "assigned_by": "0x1234def..."
+				},
+				"assignment_assertion_format": "json",
+				"hash_prev_message": "0x7e1b929f78b6f65e12c72db6b176d9d9f9a6a9445b5ab9254e4d4de4b725ba06",
+				"server_transfer_number": 1234,
+				"server_signature": "0x2f2dbfe1428b5e5de27a28b3a5e5e8c80f02502c91f14e579f79868f8c09e55644916d7e5f1b0e8b21d165b2a89d9a9c1ca95f1aef126d54b38d0c501f9650501"
+			  }
+			  
+			
+
+				]]></artwork>
+				  </figure>
+		</section>
+   		<!-- END SUBSECTION -->
+
+
+
+		<!-- SUBSECTION -->
+		<section anchor="transfer-complete-message-section" title="Transfer Complete Message">
+
+		<t>The purpose of this message is for the client to indicate to the server that 
+		the asset transer session (identified by session_id)
+		has been completed and that no further messages are to be 
+		expected from the client in regards to this transfer instance.</t>
+
+		<t>The message closes the first message of Stage 2 (Transfer Commence Message).</t>
+
+  		<t>This message is sent from the client to the Transfer Complete Endpoint at the server.</t>
+
+   		<t>The message must be signed by the client.</t>
+
+		<t>The parameters of this message consists of the following:</t>
+			<t><list style="symbols">
+
+			<t>message_type REQUIRED. It MUST be the value urn:ietf:satp:msgtype:commit-transfer-complete-msg.</t>
+
+			<t>session_id REQUIRED: A unique identifier (UUIDv2) chosen earlier 
+			by client in the Initialization Request Message.</t> 
+
+			<t>transferContext_id OPTIONAL: An optional identifier (UUIDv2) 
+			used to identify the current transfer session at the application layer.</t> 
+
+			<t>client_identity_pubkey REQUIRED. The client who sent this message.</t>
+
+			<t>server_identity_pubkey REQUIRED. The server for whom this message is intended.</t>
+
+			<t>hash_prev_message REQUIRED. The hash of previous message. </t>
+
+			<t>hash_transfer_commence REQUIRED. The hash of the Transfer Commence message 
+			at the start of Stage 2.</t>
+
+			<t>client_transfer_number OPTIONAL.
+			This is the transfer identification number chosen by the client.	
+			This number is meaningful only the client.</t>
+
+			<t>client_signature REQUIRED. The digital signature of the client.</t>
+
+			</list></t>
+			<t>Example:</t>
+		
+			
+			<figure align="center" anchor="transfer-complete">
+				<artwork><![CDATA[                                         
+		
+		
+			POST /transfer-complete HTTP/1.1
+			Host: server.example.com
+			Authorization: Basic awHCaGRSa3F0MzpnWDFmQmF0M2ZG
+			Content-Type: application/x-www-form-urlencoded
+			{
+				"message_type": "urn:ietf:satp:msgtype:commit-transfer-complete-msg",
+				"session_id": "9a7c558f-03d8-43f1-9e18-87573a824c72",
+				"client_identity_pubkey": "0x3a3c1a8f082d56a87c482f1ab71f50c92aebd86d",
+				"server_identity_pubkey": "0x2910e09dbf7a1cc48dc99d7e390f86d9ac7a28c9",
+				"hash_prev_message": "a1e7b73a-59d6-4f38-a689-4b4d4b4d4b4d",
+				"hash_transfer_commence": "f90d6f10-87d5-4c5f-b262-83c8a2aa0f64",
+				"client_transfer_number": "12345",
+				"client_signature": "0x9c7b3df0fb22c8fa37cc48e10f7c413bb84d2d7e32c37d9ac7c1d221b35cb7d1"
+			  }
+			  
+			
+
+				]]></artwork>
+				  </figure>
+
+		</section>
+
+
+   	
+	
+	</section>
+   	<!-- END SECTION -->
+
+
+   	<!-- START SECTION -->
+   	<section anchor="session-resume-section" title="SATP Session Resumption">
+   	<t> This section answers the question how can a backup gateway build trust with the counter party gateway to resume the execution of the protocol, in the presence of errors and crashes?</t>
+
+	<t>Gateways may enter faulty state at any time while execution the protocol. The faulty state can manifest itself by incorrect behaviour, leading to gateways emitting alerts and errors.</t>
+	<t>In some instances, gateways may crash. We employ either the primary-backup or self-healing paradigm, meaning that the crashed gateway will eventually be replaced by a functioning one, or recover, respectively.</t>
+	<t>When a crash occurs, we initiate a recovery procedure by the backup gateway or the recovered gateway, as defined in the crash recovery draft [draft-belchior-gateway-recovery-05]. In either case, if the recovery happens  within a time period defined as max_timeout (in Stage 2), the recovered gateway triggers a session resumption. The schema and order of the recovered messages is specified in the crash recovery draft.</t>
+	<t>In the case where there is no answer from the gateway within the specified max_timeout, the counter-party gateway rollbacks the process until that stage. Upon recovery, the crashed gateway learns that the counterparty gateway has initated a rollback, and it proceeds accordingly (by also initating a rollback). Note that rollbacks can also happen in case of unresolved errors.</t>
+	<t>The non-crashed gateway that conducts the rollback tries to communicate with the crashed gateway from time to time (self healing) or to contact the backup gateways (primary-backup). In any case, and upon the completion of a rollback, the non-crashed gateway sends a ROLLBACK message to the recovered gateway to notify that a rollback happened. The recovered gateway should answer with ROLLBACK-ACK.</t>
+	<t>Since the self-healing recovery process does not require changes to the protocol (since from the counterparty gateway perspective, the sender gateway is just taking longer than normal; there are no new actions done or logs recorded), we focus on the primary-backup paradigm.</t>
+		
+		<section anchor="session-resume-section-pb" title="Primary-Backup Session Resumption">
+			<t>Upon a gateway recovering using primary-backup, a new gateway (recovered gateway) takes over the crashed gateway. The counter-party gateway assures that the recovered gateway is legitimate (according to the crash recovery specification).</t>
+			<t>After the recovery, the gateways exchange information about their current view of the protocol, since the crashed gateway may have been in the middle of executing the protocol when it crashed.</t>
+			<t>After that, the gateways agree on the current state of the protocol. </t>
+
+			<t>We now illustrate a situation where the source gateway crashes, and later recovers, before max_timeout expires:</t>
+<figure align="center" anchor="crash-recovery-core-v0.1">
+  <artwork>
+  <![CDATA[                                         
+                    ,--------------.          ,----------.                                                                         ,----------.                                                  ,--------------.          
+                    |State Data DB1|          |Gateway G1|                                                                         |Gateway G2|                                                  |State Data DB2|          
+                    `--------------'          `----------'                                                                         `----------'                                                  `--------------'          
+                           |                       |                                Lock-Assertion (2.2)                                |                                                               |                  
+                           |                       | ----------------------------------------------------------------------------------->                                                               |                  
+                           |                       |                                                                                    |                                                               |                  
+                           |                       |----.                                                                               |                                                               |                  
+                           |                       |    | <color:red><warning> Crash <warning>                                          |                                                               |                  
+                           |                       |<---'                                                                               |                                                               |                  
+                           |                       |                                                                                    |                                                               |                  
+                           |                       |                                                                                    |                                                               |                  
+                           |                       |                                                                                    |----.                                                          |                  
+                           |                       |                                                                                    |    | do Lock-Assertion Broadcast (2.3)                        |                  
+                           |                       |                                                                                    |<---'                                                          |                  
+                           |                       |                                                                                    |                                                               |                  
+                           |                       | Lock-Assertion-Receipt (2.4) <color:red><&warning> Gets 503 or no answer <&warning>|                                                               |                  
+                           |                       |                                                                                    |                                                               |                  
+                           |                       | <-----------------------------------------------------------------------------------                                                               |                  
+                           |                       |                                                                                    |                                                               |                  
+                           |                       |                                                                                    |                                                               |                  
+                           |        ______________________________________________________________________________________________________________________________________________________________________________________ 
+                           |        ! ALT  /  retry until application timeout                                                           |                                                               |                 !
+                           |        !_____/        |                                                                                    |                                                               |                 !
+                           |        !              |                          send Lock-Assertion-Receipt (2.4)                         |                                                               |                 !
+                           |        !              | <-----------------------------------------------------------------------------------                                                               |                 !
+                           |        !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
+                           |        ! [Failure]    |                                                                                    |                                                               |                 !
+                           |        !              |                                                                                    |                  record G1 has crashed, wait                  |                 !
+                           |        !              |                                                                                    | -------------------------------------------------------------->                 !
+                           |        !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
+                           |                       |                                                                                    |                                                               |                  
+                           |                       |                                                                                    |                                                               |                  
+          ________________________________________________________________________________________________________________________________________________________________________________________________________________ 
+          ! ALT  /  waiting until max_timeout      |                                                                                    |                                                               |                 !
+          !_____/          |                       |                                                                                    |                                                               |                 !
+          !                |                       |----.                                                                               |                                                               |                 !
+          !                |                       |    | <color:green> recovers from crash                                             |                                                               |                 !
+          !                |                       |<---'                                                                               |                                                               |                 !
+          !                |                       |                                                                                    |                                                               |                 !
+          !                |                       |                                <color:green> RECOVER                               |                                                               |                 !
+          !                |                       | ----------------------------------------------------------------------------------->                                                               |                 !
+          !                |                       |                                                                                    |                                                               |                 !
+          !                |                       |                            <color:green> RECOVER-UPDATE                            |                                                               |                 !
+          !                |                       | <-----------------------------------------------------------------------------------                                                               |                 !
+          !                |                       |                                                                                    |                                                               |                 !
+          !                |      update state     |                                                                                    |                                                               |                 !
+          !                | <----------------------                                                                                    |                                                               |                 !
+          !                |                       |                                                                                    |                                                               |                 !
+          !                |                       |                          <color:green> RECOVER-UPDATE-ACK                          |                                                               |                 !
+          !                |                       | ----------------------------------------------------------------------------------->                                                               |                 !
+          !                |                       |                                                                                    |                                                               |                 !
+          !                |                       |                            Lock-Assertion-Receipt (2.4)                            |                                                               |                 !
+          !                |                       | <-----------------------------------------------------------------------------------                                                               |                 !
+          !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
+          ! [Failure]      |                       |                                                                                    |                                                               |                 !
+          !                |                       |                                                                                    |                record G1 has crashed definitely               |                 !
+          !                |                       |                                                                                    | -------------------------------------------------------------->                 !
+          !                |                       |                                                                                    |                                                               |                 !
+          !                |                       |                                                                                    |----.                                                                            !
+          !                |                       |                                                                                    |    | <color:red><&warning> Initiate rollback process <&warning>                 !
+          !                |                       |                                                                                    |<---'                                                                            !
+          !                |                       |                                                                                    |                                                                                 !
+          !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
+                    ,--------------.          ,----------.                                                                         ,----------.                                                  ,--------------.          
+                    |State Data DB1|          |Gateway G1|                                                                         |Gateway G2|                                                  |State Data DB2|          
+                    `--------------'          `----------'                                                                         `----------'                                                  `--------------'          
+
+  ]]>
+  </artwork>
+</figure>
+
+
+<t><eref target="http://www.plantuml.com/plantuml/png/dL9TQzj047pNhrWIA3LKfL7Q5nD4_E6Qqa23-_5KA9kxZNpuT2TsLtNzxtjILEF4xWUzXuDZXfcvdRqMHTQszXa5TRg3iu-AIZ17HPXFByu01UpTnHvU9dIBErW-G58T8qMFS7LQiXWaYwm_KkKbLsEuYMQJJqI8rSK0pukNnQW79O5N9lh8OoPRNcsHWmjL2JD6MSF-_JLa6GzYDZxLct94Qr2qKxuSzKmviirNPCWrFUdrw97jixtlabJWpQjBY0mX0WRP4i068AWr_Dbz1RERrorrgbl2PYKTz06THwmQRmps4TJLrDiDODqk8AyX2wOKB1_JfUH5uBpMnSsy1QTRvaEDDA0ny1a8jlK5QnHm7G38_i2jkWqI_gdStPe-iUGjCOVtmuIFccaOg9GzZxVYGNkETOFFXaCR3vYhnQp3ryMA-WeGm-d6Vdds_daq-ANRrh3CRIDHIKGJVVVFGQ5V39xtvF_gVRiVoSBbkvTS4f-Ty3lmlrcbTubikk-mz7xEpGRQ3WQ4dcyJbrLr-bgQ_yJ">Link to the PlantUML diagram referring to the above figure can be found here.</eref>
+
+</t>
+
+		</section>
+
+		<section anchor="session-resume-recovery-msg" title="Recovery Messages">
+		<t>We have omitted the logging procedure (only focusing the different messages). As defined in the crash recovery draft [draft-belchior-gateway-recovery-05], there are a set of messages that are exchanged between the recovered gateway and counterparty gateway:</t>
+		
+		<t><list style="symbols">
+
+		<t>RECOVER: when a gateway crashes and recovers, it sends a RECOVER message to the counterparty gateway, informing them of its most recent state. The message contains various parameters such as the session ID, message type, SATP phase, sequence number, a flag indicating if the sender is a backup gateway, the new public key if the sender is a backup, the timestamp of the last known log entry, and the sender's digital signature.</t>
+		<t>RECOVER-UPDATE: Upon receiving the RECOVER message, the counterparty gateway sends a RECOVER-UPDATE message. This message carries the difference between the log entry corresponding to the received sequence number from the recovered gateway and the latest sequence number (corresponding to the latest log entry). The message includes parameters such as the session ID, message type, the hash of the previous message, the list of log messages that the recovered gateway needs to update, and the sender's digital signature.</t>
+		<t>RECOVER-SUCCESS: The recovered gateway responds with a RECOVER-SUCCESS message if its logs have been successfully updated. If there are inconsistencies detected, the recovered gateway initiates a dispute with a RECOVER-DISPUTE message. The message parameters include session ID, message type, the hash of the previous message, a boolean indicating success, a list of hashes of log entries that were appended to the recovered gateway log, and the sender's digital signature.</t>
+			</list></t>
+
+		<t>In case the recovery procedure has failed and a rollback process is needed, the following messages are used:</t>
+
+		<t><list style="symbols">
+
+		<t>ROLLBACK: A gateway that initiates a rollback sends a ROLLBACK message. The message parameters include session ID, message type, a boolean indicating success, a list of actions performed to rollback a state (e.g., UNLOCK, BURN), a list of proofs specific to the DLT [SATP], and the sender's digital signature.</t>
+		<t>ROLLBACK-ACK: Upon successful rollback, the counterparty gateway sends a ROLLBACK-ACK message to the recovered gateway acknowledging that the rollback has been performed successfully. The message parameters are similar to those of the ROLLBACK message.</t>
+			</list></t>
+
+		</section>
+
+	</section>
+   	<!-- END SECTION -->
+
+
+
+
+
+   	<!-- START SECTION -->
+   	<section anchor="alert-error-messages" title="Alert and Error Messages">
+
+	<t>SATP provides an Alert content type to indicate closure information and errors.  
+	Alert messages are encrypted under the current TLS connection between gateways.</t>
+
+
+	<t>Alert messages convey a description of the alert and a field that conveyed 
+	the severity level of the alert or error.</t>
+
+	<t>In SATP the Alerts are divided into two classes: terminate alerts and error alerts. </t>
+
+	<t>The "terminate_notify" alert is used to indicate orderly closure of one direction 
+	of the SATP transfer connection.  
+	Upon receiving such an alert, the SATP implementation SHOULD indicate end-of-data to the application.</t>
+
+
+	<t>Error alerts indicate abortive closure of the SATP transfer connection. 
+	Upon receiving an error alert, the SATP implementation SHOULD indicate 
+	an error to the application and MUST NOT allow any further data to be 
+	sent or received on the transfer connection.</t>
+
+
+		<figure align="center" anchor="error-format">
+		<artwork><![CDATA[                                         
+            	
+  enum { warning(1), fatal(2), (255) } AlertLevel;
+
+      enum {
+          close_notify(0),
+          bad_certificate(42),
+          unsupported_certificate(43),
+          certificate_revoked(44),
+          certificate_expired(45),
+          certificate_unknown(46),
+          illegal_parameter(47),
+          TBD
+          (255)
+      } AlertDescription;
+
+      struct {
+          AlertLevel level;
+          AlertDescription description;
+      } Alert;
+
+
+		]]></artwork>
+      	</figure>
+
+
+		<!-- SUBSECTION -->
+		<section anchor="closure-alerts-section" title="Closure Alerts">
+
+
+		<t>The SATP client and server (gateways) must share knowledge that 
+		the transfer connection is ending in order to avoid third party attacks.</t>
+
+		<t>(a) close_notify:  This alert notifies the recipient that the sender gateway 
+		will not send any more messages on this transfer connection.  
+		Any data received after a closure alert has been received MUST be ignored.</t>
+
+		<t>(b) user_canceled:  This alert notifies the recipient that the sender gateway  
+		is canceling the transfer connection for some reason unrelated to a protocol failure. </t>
+
+		</section>
+   		<!-- END SUBSECTION -->
+
+
+
+
+		<!-- SUBSECTION -->
+		<section anchor="error-alerts-section" title="Error Alerts">
+
+		<t>When an error is detected by a SATP gateway, the detecting gateway sends a message to its peer.</t>  
+
+		<t>Upon transmission or receipt of a fatal alert message, both gateways MUST immediately close the connection. 
+		Whenever a SATP implementation encounters a fatal error condition, 
+		it SHOULD send an appropriate fatal alert and 
+		MUST close the connection without sending or receiving any additional data.</t>
+
+		<t>The following error alerts are defined:</t>
+			<t><list style="symbols">
+
+			<t>connection_error: There is an error in the TLS session establishment 
+			(TLS error codes should be reported-up to gateway level)</t>
+
+			<t>bad_certificate:  The gateway certificate was corrupt, contained signatures, 
+			that did not verify correctly, etc. 
+			(Some common TLS level errors: unsupported_certificate, 
+			certificate_revoked, certificate_expired, certificate_unknown, unknown_ca).</t>
+
+			<t>protocol_version_error:  The SATP protocol version the peer 
+			has attempted to negotiate is recognized but not supported.</t>
+
+			</list></t>
+
+
+		</section>
+   		<!-- END SUBSECTION -->
+
+	</section>
+
+	
+
+   	<!-- START SECTION -->
+   	<section anchor="Security-Consideration" title="Security Consideration">
+   	
+	<t>Gateways are of particular interest to attackers because 
+	they are a kind of end-to-end pipeline that enable the transferral of 
+	digital assets to external networks or systems. 
+	Thus, attacking a gateway may be attractive to attackers instead of 
+	the network behind a gateway.</t>
+	
+	<t>As such, hardware hardening technologies and 
+	tamper-resistant crypto-processors (e.g. TPM, Secure Enclaves, SGX) 
+	should be considered for implementations of gateways. </t> 
+	
+	</section>
+
+
+   	<section anchor="iana-Consideration" title="IANA Consideration">
+	<t>(TBD)</t>
+	</section>
+
+
+
+
+
+
+
+
+   		
+
+    <!-- This PI places the pagebreak correctly (before the section title) in the text output. -->
+
+    <?rfc needLines="8" ?>
+
+
+  </middle>
+
+
+
+  <!--  *****BACK MATTER ***** -->
+
+  <back>
+    <!-- References split into informative and normative -->
+
+    <!-- There are 2 ways to insert reference entries from the citation libraries:
+     1. define an ENTITY at the top, and use "ampersand character"RFC2629; here (as shown)
+     2. simply use a PI "less than character"?rfc include="reference.RFC.2119.xml"?> here
+        (for I-Ds: include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")
+
+     Both are cited textually in the same manner: by using xref elements.
+     If you use the PI option, xml2rfc will, by default, try to find included files in the same
+     directory as the including file. You can also define the XML_LIBRARY environment variable
+     with a value containing a set of directories to search.  These can be either in the local
+     filing system or remote ones accessed by http (http://domain/dir/... ).-->
+
+
+	<references title="Normative References">
+	
+      <!--?rfc include="http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"?-->
+      &RFC2119;
+	&RFC2234;
+	&RFC7519;
+
+
+
+	</references>
+
+	<references title="Informative References">
+
+	&RFC5939;
+
+	<reference anchor="draft-belchior-gateway-recovery-05" target="https://datatracker.ietf.org/doc/html/draft-belchior-gateway-recovery-05">
+	<front>
+		<title>DLT Gateway Crash Recovery Mechanism</title>
+		<author fullname="Rafael Belchior" initials="R." surname="Belchior">
+		<organization>INESC-ID, Instituto Superior Tecnico, MIT</organization>
+		</author>
+		<author fullname="Miguel Correia" initials="M." surname="Correia">
+		<organization>INESC-ID, Instituto Superior Tecnico</organization>
+		</author>
+		<author fullname="Andre Augusto" initials="A." surname="Augusto">
+		<organization>INESC-ID, Instituto Superior Tecnico</organization>
+		</author>
+		<author fullname="Thomas Hardjono" initials="T." surname="Hardjono">
+		<organization>MIT</organization>
+		</author>
+		<date day="19" month="April" year="2023"/>
+		<abstract>
+		<t>This memo describes the crash recovery mechanism for the Secure Asset Transfer Protocol (SATP). The goal of this draft is to specify the message flow that implements a crash recovery mechanism. The mechanism assures that gateways running SATP are able to recover faults, enforcing ACID properties for asset transfers across ledgers (i.e., double spend does not occur).</t>
+		</abstract>
+	</front>
+	<seriesInfo name="Internet-Draft" value="draft-belchior-gateway-recovery-05"/>
+	</reference>
+
+	
+		<reference anchor="NIST" target="https://doi.org/10.6028/NIST.IR.8202">
+		<front>
+			<title>NIST Blockchain Technology Overview (NISTR-8202)</title>
+			<author initials="D." surname="Yaga">		</author>
+			<author initials="P." surname="Mell">		</author>
+			<author initials="N." surname="Roby">		</author>
+			<author initials="K." surname="Scarfone">		</author>
+			<date day="" month="October" year="2018"/>
+		</front>
+		</reference>
+
+
+	
+      
+	</references>
+
+
+  <section anchor="error-alerts-per-phase" title="Appendix: Message-Specific Errors">
+			<t>This section defines the errors and alerts specific for each SATP message.</t>
+			<t>Alerts do not require immediate intervention. Errors may require rollbacks, human intervention, or session resumption.</t>
+
+			<section anchor="error-alerts-per-phase-0" title="Stage 0">
+				<t>(TBD)</t>
+			</section>
+			
+
+			<section anchor="error-alerts-per-phase-1" title="Stage 1">
+				<t>(TBD)</t>
+			</section>
+
+			<section anchor="error-alerts-per-phase-2" title="Stage 2">
+				<t>Errors for messages 2.1 and 2.2</t>
+								<t><list style="symbols">
+					<t>[err_2.1] Badly formed message. </t>
+					<t>[err_2.2] Incorrect parameter. </t>
+					<t>[err_2.3] ACK mismatch. </t>
+				</list></t>
+
+
+				<t> Error reports for Messages 2.3.A and 2.3.B (Lock failed)</t>
+								<t><list style="symbols">
+					<t>[err_2.3.1] Asset already locked. </t>
+					<t>[err_2.3.2] Insufficient funds to complete transaction. </t>
+					<t>[err_2.3.3] Time-out on lock attempt. </t>
+					<t>[err_2.3.4] Network consensus protocol error. </t>
+				</list></t>
+
+				<t> Error reports for Messages 2.3.A and 2.3.B (Read failed)</t>
+								<t><list style="symbols">
+					<t>[err_2.3.5] Gateway configuration error. </t>
+					<t>[err_2.3.6] Insufficient read/write permission. </t>
+				</list></t>
+			
+
+				<t> Error reports for Message 2.4 (Lock Assertion)</t>
+								<t><list style="symbols">
+					<t>[err_2.4.1] Badly formed message: badly formed Claim. </t>
+					<t>[err_2.4.2] Badly formed message: bad signature. </t>
+					<t>[err_2.4.3] Badly formed message: wrong transaction ID. </t>
+					<t>[err_2.4.4] Badly formed message: Mismatch hash values. </t>
+					<t>[err_2.4.5] Expired signing-key certificate. </t>
+					<t>[err_2.4.6] Expired Claim. </t>
+				</list></t>
+
+				<t> Error reports for Message 2.5 (Log Evidence): </t>
+								<t><list style="symbols">
+					<t>[err_2.5.1] Badly formed message:  bad log entry. </t>
+					<t>[err_2.5.2] Write failed. </t>
+					<t>[err_2.5.3] Out of space (local storage). </t>
+					<t>[err_2.5.4] Insufficient funds to complete transaction. </t>
+					<t>[err_2.5.5] Network consensus protocol error. </t>
+
+				</list></t>
+
+				<t> Error reports for Message 2.6 (Lock Assertion Receipt): </t>
+								<t><list style="symbols">
+					<t>[err_2.6.1] Badly formed message: badly formed Claim. </t>
+					<t>[err_2.6.2] Badly formed message: bad signature. </t>
+					<t>[err_2.6.3] Badly formed message: wrong transaction ID. </t>
+					<t>[err_2.6.4] Badly formed message: Mismatch hash values. </t>
+					<t>[err_2.6.5] Expired signing-key certificate. </t>
+					<t>[err_2.6.6] Expired Claim. </t>
+
+				</list></t>
+
+			</section>
+		
+			<section anchor="error-alerts-per-phase-3" title="Stage 3">
+				<t>Error reports for Message 3.1 (Commit Prepare):</t>
+								<t><list style="symbols">
+					<t>[err_3.1.1] Badly formed message: wrong transaction ID. </t>
+					<t>[err_3.1.2] Badly formed message: mismatch hash value. </t>
+					<t>[err_3.1.3] Incorrect parameter. </t>
+					<t>[err_3.1.4] Message out of sequence </t>
+				</list></t>
+
+				<t>Error reports for Message 3.2 (ACK-Prepare):</t>
+								<t><list style="symbols">
+					<t>[err_3.2.1] Badly formed message: wrong transaction ID. </t>
+					<t>[err_3.2.2] Badly formed message: mismatch hash value. </t>
+					<t>[err_3.2.3] Incorrect parameter. </t>
+					<t>[err_3.2.4] Message out of sequence </t>
+				</list></t>
+
+				<t>Error reports for Message 3.3A and 3.3B (Create asset fail):</t>
+								<t><list style="symbols">
+					<t>[err_3.3.1] Asset already exist. </t>
+					<t>[err_3.3.2] Insufficient funds to complete transaction. </t>
+					<t>[err_3.3.3] Time-out for transaction finality. </t>
+					<t>[err_3.3.4] Network consensus protocol error. </t>
+				</list></t>
+
+				<t>Error reports for Message 3.3A and 3.3B (Read asset fail):</t>
+								<t><list style="symbols">
+					<t>[err_3.3.5] Gateway configuration error. </t>
+					<t>[err_3.3.6] Insufficient read/write permission. </t>
+				</list></t>
+
+				<t>Error reports for Message 3.4 (Commit Ready):</t>
+								<t><list style="symbols">
+					<t>[err_3.4.1] Badly formed message: wrong transaction ID. </t>
+					<t>[err_3.4.2] Badly formed message: mismatch hash value. </t>
+					<t>[err_3.4.3] Incorrect parameter. </t>
+					<t>[err_3.4.4] Message out of sequence (ACK mismatch). </t>
+				</list></t>
+
+				<t>Error reports for Message 3.5A and 3.5B (Extinguish asset failed):</t>
+								<t><list style="symbols">
+					<t>[err_3.5.2] Insufficient funds to complete transaction.</t>
+					<t>[err_3.5.3] Time-out for transaction finality.</t>
+					<t>[err_3.5.4] Network consensus protocol error.</t>
+					<t>[err_3.5.5] Escrow entity unavailable (Soft Delete)</t>
+				</list></t>
+
+				<t>Error reports for Message 3.5A and 3.5B (Read asset failed):</t>
+								<t><list style="symbols">
+					<t>[err_3.5.6] Gateway configuration error.</t>
+					<t>[err_3.5.7] Insufficient read/write permission.</t>
+				</list></t>
+
+				<t>Error reports for Message 3.6 (Commit Final Assertion):</t>
+								<t><list style="symbols">
+					<t>[err_3.6.1] Badly formed message: badly formed Claim.</t>
+					<t>[err_3.6.2] Badly formed message: bad signature.</t>
+					<t>[err_3.6.3] Badly formed message: wrong transaction ID.</t>
+					<t>[err_3.6.4] Badly formed message: Mismatch hash values.</t>
+					<t>[err_3.6.5] Expired signing-key certificate</t>
+					<t>[err_3.6.6] Expired Claim</t>
+				</list></t>
+
+				<t>Error reports for Message 3.7.A and 3.7.B (Assign Asset failed):</t>
+								<t><list style="symbols">
+					<t>[err_3.7.1] Insufficient funds to complete transaction.</t>
+					<t>[err_3.7.2] Time-out for transaction finality.</t>
+					<t>[err_3.7.3] Network consensus protocol error.</t>
+				</list></t>
+
+				<t>Error reports for Message 3.7.A and 3.7.B (Read Asset failed):</t>
+								<t><list style="symbols">
+					<t>[err_3.7.4] Gateway configuration error.</t>
+					<t>[err_3.7.5] Insufficient read/write permission.</t>
+				</list></t>
+
+				<t>Error reports for Message 3.8 (ACK-Final-Receipt):</t>
+								<t><list style="symbols">
+					<t>[err_3.8.1] Badly formed message: badly formed Claim.</t>
+					<t>[err_3.8.2] Badly formed message: bad signature.</t>
+					<t>[err_3.8.3] Badly formed message: wrong transaction ID.</t>
+					<t>[err_3.8.4] Badly formed message: Mismatch hash values.</t>
+					<t>[err_3.8.5] Expired signing-key certificate</t>
+					<t>[err_3.8.6] Expired Claim</t>
+				</list></t>
+
+				<t>Error reports for Message 3.9 (Log-evidence):</t>
+								<t><list style="symbols">
+					<t>[err_3.9.1] Badly formed message:  bad log entry.</t>
+					<t>[err_3.9.2] Write failed.</t>
+					<t>[err_3.9.3] Out of space (local storage).</t>
+					<t>[err_3.9.4] Insufficient funds to complete transaction (e.g. Filecoin/IPFS)</t>
+					<t>[err_3.9.5] Network consensus protocol error.</t>
+				</list></t>
+
+				<t>Error reports for Message 3.10 (Transfer complete):</t>
+								<t><list style="symbols">
+					<t>[err_3.10.1] Badly formed message.</t>
+					<t>[err_3.10.2] Incorrect parameter.</t>
+					<t>[err_3.10.3] ACK mismatch.</t>
+				</list></t>
+
+			</section>
+		
+		</section>
+    <!-- Change Log
+
+v00 2006-03-15  EBD   Initial version
+
+v01 2006-04-03  EBD   Moved PI location back to position 1 -
+                      v3.1 of XMLmind is better with them at this location.
+v02 2007-03-07  AH    removed extraneous nested_list attribute,
+                      other minor corrections
+v03 2007-03-09  EBD   Added comments on null IANA sections and fixed heading capitalization.
+                      Modified comments around figure to reflect non-implementation of
+                      figure indent control.  Put in reference using anchor="DOMINATION".
+                      Fixed up the date specification comments to reflect current truth.
+v04 2007-03-09 AH     Major changes: shortened discussion of PIs,
+                      added discussion of rfc include.
+v05 2007-03-10 EBD    Added preamble to C program example to tell about ABNF and alternative 
+                      images. Removed meta-characters from comments (causes problems).  -->
+  </back>
+</rfc>
