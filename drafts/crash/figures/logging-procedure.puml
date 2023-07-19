@@ -1,0 +1,22 @@
+@startuml
+
+entity "G1" as sg
+entity "G2" as rg
+entity "Log API G1" as log
+entity "Log API G2" as log2
+autonumber
+
+sg->log: writeLogEntry <stage,step,operation>
+
+sg->rg: <1,1,init-TRANSFER-COMMENCE>
+
+
+      rg->log2: writeLogEntry <exec-TRANSFER-COMMENCE>
+          rg->rg: execute TRANSFER-COMMENCE
+          rg->log2: writeLogEntry <done-TRANSFER-COMMENCE>
+          rg->log2: writeLogEntry <ack-TRANSFER-COMMENCE>
+
+rg->sg: [8] <1,2,init-TRANSFER-COMMENCE>
+
+
+@enduml

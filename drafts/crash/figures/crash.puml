@@ -6,15 +6,15 @@ entity "Log Storage G1" as log
 entity "Log Storage G2" as log2
 autonumber
 
-sg->log: writeLogEntry <1,1,init-validate>
+sg->log: writeLogEntry <stage2,2.2,init-2.2>
 
-sg->rg: <1,1,init-validate>
+sg->rg: <stage2,2.2,init-2.2>
 
 
 sg->sg: <color:red><&warning> Crash <&warning>
 
-      rg->log2: writeLogEntry <exec-validate>
-          rg->rg: execute init
+      rg->log2: writeLogEntry <exec-2.2>
+          rg->rg: execute lock assertion broadcast (2.3)
           rg->log2: writeLogEntry <done-init>
           rg->log2: writeLogEntry <ack-init>
 rg->sg: <1,2,init-validate-ack> \n discovers that G1 crashed \n via timeout
