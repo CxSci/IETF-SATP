@@ -1,0 +1,41 @@
+@startuml
+
+entity "Log Storage G1" as db1
+entity "Gateway G1" as sg
+entity "Gateway G2" as rg
+entity "Log Storage G2" as db2
+
+
+
+
+
+sg->rg: Lock-Assertion (2.2)
+sg->sg: <color:red><warning> Crash <warning>\n
+
+rg->rg: do Lock-Assertion Broadcast (2.3)
+rg->sg: Lock-Assertion-Receipt (2.4) <color:red><&warning> Gets 503 or no answer <&warning>\n
+
+alt#Gold #LightBlue retry until application timeout
+    rg -> sg: send Lock-Assertion-Receipt (2.4) 
+else #Pink Failure
+    rg -> db2: record G1 has crashed, wait
+end
+
+alt#Gold #LightBlue waiting until max_timeout
+   sg->sg: <color:green> <&warning> recovers from crash
+    sg->rg: <color:green> RECOVER 
+    rg->rg: validate recovered gateway
+    rg->rg: compute state to be shared (SS) 
+   rg->sg: <color:green> RECOVER-UPDATE
+   sg->db1: get latest state LS
+   sg->sg: update state (LS,SS)
+    sg->rg: <color:green> RECOVER-SUCCESS
+    rg->sg: Lock-Assertion-Receipt (2.4)
+
+else #Pink Failure
+    rg -> db2: record G1 has crashed definitely <&warning>
+    rg -> rg:  <color:red><&warning> ROLLBACK \n using custom rollback logic\n
+end
+
+
+@enduml
